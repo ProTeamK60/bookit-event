@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin()
 public class EventController {
 
 	private final EventService eventService;
@@ -32,6 +32,5 @@ public class EventController {
 
 	private ResponseStatusException notFound() {
 		return new ResponseStatusException(HttpStatus.NOT_FOUND, "entity not found");
-
 	}
 }

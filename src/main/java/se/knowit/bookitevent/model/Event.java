@@ -1,5 +1,6 @@
 package se.knowit.bookitevent.model;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import javax.persistence.Entity;
@@ -19,9 +20,9 @@ public class Event {
 	private UUID eventId;
 	private String name;
 	private String description;
-	private String eventStart;
-	private String eventEnd;
-	private String deadlineRVSP;
+	private LocalDateTime eventStart;
+	private LocalDateTime eventEnd;
+	private LocalDateTime deadlineRVSP;
 	private String location;
 	private String organizer;
 

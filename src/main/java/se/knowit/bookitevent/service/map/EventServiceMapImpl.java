@@ -17,7 +17,7 @@ public class EventServiceMapImpl implements EventService {
     
     @Override
     public Event findById(Long aLong) {
-        return null;
+        return map.get(aLong);
     }
     
     @Override

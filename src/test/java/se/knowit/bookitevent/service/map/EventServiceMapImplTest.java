@@ -6,6 +6,8 @@ import se.knowit.bookitevent.model.Event;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.UUID;
+
 class EventServiceMapImplTest {
     
     private static final Long DEFAULT_ID = 1L;
@@ -17,7 +19,7 @@ class EventServiceMapImplTest {
         Event event = new Event();
         event.setName("DEFAULT_EVENT");
         event.setId(DEFAULT_ID);
-        event.setEventId("72ab7c8b-c0d5-4ab2-8c63-5cf1ad0b439b");
+        event.setEventId(UUID.fromString("72ab7c8b-c0d5-4ab2-8c63-5cf1ad0b439b"));
         eventService.save(event);
     }
     

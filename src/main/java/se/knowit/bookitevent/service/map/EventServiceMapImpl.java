@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -49,5 +50,10 @@ public class EventServiceMapImpl implements EventService {
 				x -> x.getValue().getEventId().equals(id)).map(y -> y.getValue()).findFirst();
 
 		return event;
+	}
+
+	@Override
+	public Set<Event> findAll() {
+		return Set.copyOf(map.values());
 	}
 }

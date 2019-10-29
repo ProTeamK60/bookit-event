@@ -6,6 +6,7 @@ import org.springframework.web.server.ResponseStatusException;
 import se.knowit.bookitevent.model.Event;
 import se.knowit.bookitevent.service.EventService;
 
+import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -19,8 +20,13 @@ public class EventController {
 		this.eventService = eventService;
 	}
 
+	@GetMapping("events")
+	public Set<Event> showAllEvent() {
+		return eventService.findAll();
+	}
+	
 	@GetMapping("events/{id}")
-	public Event getById(@PathVariable(value = "id") String id) {
+	public Event showById(@PathVariable(value = "id") String id) {
 		return eventService.findByEventId(UUID.fromString(id)).orElseThrow(this::notFound);
 	}
 

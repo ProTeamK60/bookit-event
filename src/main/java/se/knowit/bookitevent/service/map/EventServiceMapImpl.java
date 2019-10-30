@@ -1,15 +1,11 @@
 package se.knowit.bookitevent.service.map;
 
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Service;
 import se.knowit.bookitevent.model.Event;
 import se.knowit.bookitevent.service.EventService;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Service
-@Profile("map")
 public class EventServiceMapImpl implements EventService {
 	private final Map<Long, Event> map;
 	
@@ -17,7 +13,7 @@ public class EventServiceMapImpl implements EventService {
 		this(new ConcurrentHashMap<>());
 	}
 	
-	public EventServiceMapImpl(Map<Long, Event> map) {
+	EventServiceMapImpl(Map<Long, Event> map) {
 		this.map = map;
 	}
 	

@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/")
+@RequestMapping("/api/v1")
 @CrossOrigin(origins = "http://localhost:4200")
 public class EventController {
 
@@ -20,12 +20,12 @@ public class EventController {
 		this.eventService = eventService;
 	}
 
-	@GetMapping("events")
+	@GetMapping("/events")
 	public Set<Event> showAllEvent() {
 		return eventService.findAll();
 	}
 	
-	@GetMapping("events/{id}")
+	@GetMapping("/events/{id}")
 	public Event showById(@PathVariable(value = "id") String id) {
 		return eventService.findByEventId(UUID.fromString(id)).orElseThrow(this::notFound);
 	}

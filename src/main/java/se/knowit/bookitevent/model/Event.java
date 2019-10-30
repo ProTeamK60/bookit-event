@@ -1,14 +1,14 @@
 package se.knowit.bookitevent.model;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
+import lombok.Data;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-
-import lombok.Data;
+import java.time.LocalDateTime;
+import java.util.Objects;
+import java.util.UUID;
 
 @Data
 @Entity
@@ -26,4 +26,7 @@ public class Event {
 	private String location;
 	private String organizer;
 
+	public boolean haveEventId(UUID other) {
+		return Objects.equals(eventId, other);
+	}
 }

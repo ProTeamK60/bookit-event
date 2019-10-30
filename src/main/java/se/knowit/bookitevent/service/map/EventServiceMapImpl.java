@@ -5,19 +5,22 @@ import org.springframework.stereotype.Service;
 import se.knowit.bookitevent.model.Event;
 import se.knowit.bookitevent.service.EventService;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @Profile("map")
 public class EventServiceMapImpl implements EventService {
-	private Map<Long, Event> map = new HashMap<>();
-
+	private final Map<Long, Event> map;
+	
+	public EventServiceMapImpl() {
+		this(new ConcurrentHashMap<>());
+	}
+	
+	public EventServiceMapImpl(Map<Long, Event> map) {
+		this.map = map;
+	}
+	
 	@Override
 	public Event findById(Long aLong) {
 		return map.get(aLong);
@@ -25,15 +28,13 @@ public class EventServiceMapImpl implements EventService {
 
 	@Override
 	public Event save(Event object) {
-		if (object != null) {
-			if (object.getId() == null) {
-				object.setId(getNextId());
-			}
-			map.put(object.getId(), object);
-		} else {
-			throw new IllegalArgumentException("object must not be null");
+		Event event = Objects.requireNonNull(object, "object must not be null");
+		
+		if (event.getId() == null) {
+			event.setId(getNextId());
 		}
-		return object;
+		map.put(event.getId(), event);
+		return event;
 	}
 
 	private Long getNextId() {
@@ -46,9 +47,9 @@ public class EventServiceMapImpl implements EventService {
 
 	@Override
 	public Optional<Event> findByEventId(UUID id) {
-		Optional<Event> event = map.entrySet().stream().filter(
-				x -> x.getValue().getEventId().equals(id)).map(y -> y.getValue()).findFirst();
-
+		Optional<Event> event = map.values().stream()
+				.filter(ev -> ev.haveEventId(id))
+				.findFirst();
 		return event;
 	}
 

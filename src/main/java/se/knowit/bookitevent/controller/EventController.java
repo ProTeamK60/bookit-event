@@ -21,7 +21,7 @@ public class EventController {
 	}
 
 	@GetMapping("/events")
-	public Set<Event> showAllEvent() {
+	public Set<Event> findAllEvents() {
 		Set<Event> all = eventService.findAll();
 		if (all.isEmpty()) {
 			throw notFound();
@@ -30,7 +30,7 @@ public class EventController {
 	}
 	
 	@GetMapping("/events/{id}")
-	public Event showById(@PathVariable(value = "id") String id) {
+	public Event findById(@PathVariable String id) {
 		return eventService.findByEventId(UUID.fromString(id)).orElseThrow(this::notFound);
 	}
 

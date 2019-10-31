@@ -22,7 +22,11 @@ public class EventController {
 
 	@GetMapping("/events")
 	public Set<Event> showAllEvent() {
-		return eventService.findAll();
+		Set<Event> all = eventService.findAll();
+		if (all.isEmpty()) {
+			throw notFound();
+		}
+		return all;
 	}
 	
 	@GetMapping("/events/{id}")

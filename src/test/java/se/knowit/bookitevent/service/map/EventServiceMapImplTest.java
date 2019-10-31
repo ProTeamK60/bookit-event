@@ -73,8 +73,8 @@ class EventServiceMapImplTest {
     
     @Test
     void itShouldBePossibleToGetEventByInternalId() {
-        Event event = eventService.findById(DEFAULT_ID);
-        assertNotNull(event);
+        Optional<Event> event = eventService.findById(DEFAULT_ID);
+        assertTrue(event.isPresent(), "Event should be present in returned Optional");
     }
     
     @Test

@@ -6,18 +6,22 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import se.knowit.bookitevent.model.Event;
 import se.knowit.bookitevent.service.EventService;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
 class EventControllerTest {
@@ -54,9 +58,36 @@ class EventControllerTest {
     }
     
     @Test
-    void getRequestForEventsShouldReturnAllEvents() throws Exception {
+    void getRequestFor_AllEvents_ShouldReturnAllEvents() throws Exception {
         when(eventService.findAll()).thenReturn(Set.of(DEFAULT_EVENT));
         
         mockMvc.perform(get("/api/v1/events/")).andExpect(status().isOk());
+    }
+    
+    @Test
+    void getRequestFor_AllEvents_ShouldReturnErrorCode_404_WhenNoEventsExists() throws Exception {
+        when(eventService.findAll()).thenReturn(Collections.emptySet());
+    
+        mockMvc.perform(get("/api/v1/events/"))
+                .andExpect(status().isNotFound());
+    }
+    
+    @Test
+    void getRequestFor_ExistingEventId_ShouldReturnCorrectEvent() throws Exception {
+        when(eventService.findByEventId(any())).thenReturn(Optional.of(DEFAULT_EVENT));
+        
+        mockMvc.perform(get("/api/v1/events/" + DEFAULT_UUID))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.eventId").value(DEFAULT_UUID.toString()));
+    }
+    
+    @Test
+    void getRequestFor_NonExistingEventId_ShouldReturnErrorCode_404() throws Exception {
+        when(eventService.findByEventId(any())).thenReturn(Optional.empty());
+    
+        mockMvc.perform(get("/api/v1/events/ea4ab6c0-8a73-4e9b-b28a-7bb9e0f87b18"))
+                .andExpect(status().isNotFound());
+    
     }
 }

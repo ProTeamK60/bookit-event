@@ -18,13 +18,13 @@ public class EventServiceMapImpl implements EventService {
 	}
 	
 	@Override
-	public Optional<Event> findById(Long aLong) {
-		return Optional.ofNullable(map.get(aLong));
+	public Optional<Event> findById(Long id) {
+		return Optional.ofNullable(map.get(id));
 	}
 
 	@Override
-	public Event save(Event object) {
-		Event event = Objects.requireNonNull(object, "object must not be null");
+	public Event save(Event incomingEvent) {
+		Event event = Objects.requireNonNull(incomingEvent, "Event argument must not be null");
 		
 		if (event.getId() == null) {
 			event.setId(getNextId());

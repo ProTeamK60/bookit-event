@@ -19,6 +19,7 @@
 		<java.version>13</java.version>
 		<dockerfile-maven-version>1.4.13</dockerfile-maven-version>
 		<spring-cloud-sleuth.version>2.1.0.RELEASE</spring-cloud-sleuth.version>
+		<tomcat.port>8080</tomcat.port>
 	</properties>
 
 	<dependencies>
@@ -79,6 +80,12 @@
 					<artifactId>junit-vintage-engine</artifactId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit-dep</artifactId>
+			<version>4.8.2</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
@@ -149,15 +156,49 @@
 				<artifactId>maven-failsafe-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>integration-test</id>
 						<goals>
 							<goal>integration-test</goal>
+							<goal>verify</goal>
 						</goals>
 					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>io.fabric8</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<version>0.20.1</version>
+				<executions>
 					<execution>
-						<id>verify</id>
+						<id>prepare-it-bookit</id>
+						<phase>pre-integration-test</phase>
 						<goals>
-							<goal>verify</goal>
+							<goal>start</goal>
+						</goals>
+						<configuration>
+							<images>
+								<image>
+									<name>bookit-event:0.0.1-SNAPSHOT</name>
+									<alias>bookit</alias>
+									<run>
+										<ports>
+											<port>tomcat.port:8080</port>
+										</ports>
+										<wait>
+											<http>
+												<url>http://localhost:${tomcat.port}/api/v1/events</url>
+											</http>
+											<time>10000</time>
+										</wait>
+									</run>
+								</image>
+							</images>
+						</configuration>
+					</execution>
+					<execution>
+						<id>remove-bookit</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>stop</goal>
 						</goals>
 					</execution>
 				</executions>

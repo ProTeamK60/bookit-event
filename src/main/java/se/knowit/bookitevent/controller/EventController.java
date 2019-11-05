@@ -10,11 +10,14 @@ import java.util.Set;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping(EventController.BASE_PATH)
 @CrossOrigin()
 public class EventController {
-
-	private final EventService eventService;
+	@SuppressWarnings("WeakerAccess")
+	static final String BASE_PATH = "/api/v1/events";
+	private static final URI BASE_URI = URI.create(BASE_PATH + "/");
+    
+    private final EventService eventService;
 
 	public EventController(EventService eventService) {
 		this.eventService = eventService;

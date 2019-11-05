@@ -1,18 +1,15 @@
 package se.knowit.bookitevent;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
-
 import se.knowit.bookitevent.model.Event;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ClientUtilIT {
 
@@ -24,7 +21,7 @@ public class ClientUtilIT {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		RestTemplate restTemplate = new RestTemplate();
-		String url = "http://"+hostname+":"+ port +"/api/v1/events/{id}";
+		String url = "http://" + hostname + ":" + port + "/api/v1/events/{id}";
 
 		Map<String, String> par = new HashMap<>();
 		par.put("id", "72ab7c8b-c0d5-4ab2-8c63-5cf1ad0b439b");
@@ -39,9 +36,9 @@ public class ClientUtilIT {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		RestTemplate restTemplate = new RestTemplate();
-		String url = "http://"+hostname+":"+ port +"/api/v1/events";
+		String url = "http://" + hostname + ":" + port + "/api/v1/events";
 
-		Event allEvents[] = restTemplate.getForObject(url, Event[].class);
+		Event[] allEvents = restTemplate.getForObject(url, Event[].class);
 		Assertions.assertEquals(allEvents.length, 2);
 
 		Assertions.assertTrue(Arrays.stream(allEvents).map(e -> e.getId()).anyMatch(id -> id.equals(1L)));

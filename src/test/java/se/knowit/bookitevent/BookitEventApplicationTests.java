@@ -6,6 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class BookitEventApplicationTests {
     
+    @SuppressWarnings("EmptyMethod")
     @Test
     void contextLoads() {
     }

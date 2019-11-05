@@ -37,8 +37,6 @@ class EventServiceMapImplTest {
     
     private Map<Long, Event> container;
     
-    private Event defaultEvent;
-    
     @BeforeEach
     void setUp() {
         container = new ConcurrentHashMap<>();
@@ -47,28 +45,59 @@ class EventServiceMapImplTest {
     }
     
     @Test
-    void saveNewEventShouldReturnEventWithId() {
-        Event event = new Event();
-    
-        //Ensure no event available before test
+    void firstGeneratedIdShouldBe_1() {
+        Event event = getValidTestEvent();
+        
+        //Ensure there are nothing stored in the map
         container.clear();
+        Event returnedEvent = eventService.save(event);
+        assertEquals(1L, returnedEvent.getId());
+    }
+    
+    @Test
+    void savingEventWithoutStartTimeShouldThrowException() {
+        Event event = new Event();
+        event.setName("Invalid Event");
+        assertThrows(IllegalArgumentException.class, () -> eventService.save(event));
+    }
+    
+    @Test
+    void saveNewEventShouldReturnEventWithIdsSet() {
+        Event event = getValidTestEvent();
+        
+        assertNull(event.getId());
+        assertNull(event.getEventId());
+        
         Event returnedEvent = eventService.save(event);
         
         assertNotNull(returnedEvent);
         assertNotNull(returnedEvent.getId());
+        assertNotNull(returnedEvent.getEventId());
     }
     
     @Test
     void savingAnExistingEventMustNotChangeItsId() {
-        Event event = new Event();
+        Event event = getValidTestEvent();
         event.setId(10L);
         Event returnedEvent = eventService.save(event);
         assertEquals(event.getId(), returnedEvent.getId());
     }
     
+    private Event getValidTestEvent() {
+        Event event = new Event();
+        event.setName("Test event");
+        event.setEventStart(LocalDateTime.now());
+        return event;
+    }
+    
     @Test
     void itShouldNotBePossibleToSaveANullObject() {
         assertThrows(NullPointerException.class, () -> eventService.save(null));
+    }
+    
+    @Test
+    void itShouldNotBePossibleToSaveEventWithoutNameAndStartTime() {
+        assertThrows(IllegalArgumentException.class, () -> eventService.save(new Event()));
     }
     
     @Test

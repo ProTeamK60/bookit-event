@@ -24,15 +24,48 @@ public class EventServiceMapImpl implements EventService {
 
 	@Override
 	public Event save(Event incomingEvent) {
-		Event event = Objects.requireNonNull(incomingEvent, "Event argument must not be null");
-		
-		if (event.getId() == null) {
-			event.setId(getNextId());
-		}
+		Event event = ensureEventIsValidOrThrowException(incomingEvent);
+		assignRequiredIds(event);
 		map.put(event.getId(), event);
 		return event;
 	}
-
+	
+	private void assignRequiredIds(Event event) {
+		assignPersistenceIdIfNotSet(event);
+		assignEventIdIfNotSet(event);
+	}
+	
+	private void assignEventIdIfNotSet(Event event) {
+		if (event.getEventId() == null) {
+			event.setEventId(UUID.randomUUID());
+		}
+	}
+	
+	private void assignPersistenceIdIfNotSet(Event event) {
+		if (event.getId() == null) {
+			event.setId(getNextId());
+		}
+	}
+	
+	private Event ensureEventIsValidOrThrowException(Event incomingEvent) {
+		Event event = Objects.requireNonNull(incomingEvent, "Event argument must not be null");
+		ensureNameIsSet(event);
+		ensureStartTimeIsSet(event);
+		return event;
+	}
+	
+	private void ensureStartTimeIsSet(Event event) {
+		if (event.getEventStart() == null){
+			throw new IllegalArgumentException("Event must have a start time");
+		}
+	}
+	
+	private void ensureNameIsSet(Event event) {
+		if (event.getName() == null || event.getName().isBlank()) {
+			throw new IllegalArgumentException("Event must have a name");
+		}
+	}
+	
 	private Long getNextId() {
 		try {
 			return Collections.max(map.keySet()) + 1L;
@@ -43,10 +76,9 @@ public class EventServiceMapImpl implements EventService {
 
 	@Override
 	public Optional<Event> findByEventId(UUID id) {
-		Optional<Event> event = map.values().stream()
+		return map.values().stream()
 				.filter(ev -> ev.haveEventId(id))
 				.findFirst();
-		return event;
 	}
 
 	@Override

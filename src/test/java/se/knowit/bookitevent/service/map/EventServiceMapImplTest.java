@@ -4,7 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import se.knowit.bookitevent.model.Event;
 
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -19,7 +20,7 @@ class EventServiceMapImplTest {
     private static final Event DEFAULT_EVENT = buildDefaultEvent();
     
     private static Event buildDefaultEvent() {
-        LocalDateTime startTime = LocalDateTime.of(2019, 11, 13, 17, 56);
+        ZonedDateTime startTime = ZonedDateTime.of(2019, 11, 13, 17, 56,0,0, ZoneId.systemDefault());
         Event event = new Event();
         event.setName("DEFAULT_EVENT");
         event.setId(DEFAULT_ID);
@@ -86,7 +87,7 @@ class EventServiceMapImplTest {
     private Event getValidTestEvent() {
         Event event = new Event();
         event.setName("Test event");
-        event.setEventStart(LocalDateTime.now());
+        event.setEventStart(ZonedDateTime.now());
         return event;
     }
     

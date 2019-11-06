@@ -38,12 +38,12 @@ class CreateOrUpdateCommandTest {
         EventMapper mapper = new EventMapper();
         validNewDTO = new EventDTO();
         validNewDTO.setName("A test event");
-        validNewDTO.setEventStart("1970-01-02T01:00:00");
+        validNewDTO.setEventStart("1970-01-02T01:00:00.000Z");
         validNewEvent = mapper.fromDTO(validNewDTO);
     
         forUpdateDto = new EventDTO();
         forUpdateDto.setName("A test event");
-        forUpdateDto.setEventStart("1970-01-02T01:00:00");
+        forUpdateDto.setEventStart("1970-01-02T01:00:00.000Z");
         forUpdateDto.setEventId(EVENT_ID);
         forUpdateEvent = mapper.fromDTO(forUpdateDto);
     }

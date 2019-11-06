@@ -2,7 +2,8 @@ package se.knowit.bookitevent.model;
 
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -18,7 +19,7 @@ class EventValidatorTest {
     private Event createMinimalEvent() {
         Event event = new Event();
         event.setName("TV event");
-        event.setEventStart(LocalDateTime.of(2019, 12, 24, 15, 0, 0));
+        event.setEventStart(ZonedDateTime.of(2019, 12, 24, 15, 0, 0,0, ZoneId.systemDefault()));
         return event;
     }
     
@@ -32,7 +33,7 @@ class EventValidatorTest {
     }
     
     private Event addCorrectDateToMinimalEvent(Event minimalEvent) {
-        LocalDateTime eventStart = minimalEvent.getEventStart();
+        ZonedDateTime eventStart = minimalEvent.getEventStart();
         minimalEvent.setEventEnd(eventStart.plusHours(2));
         minimalEvent.setDeadlineRVSP(eventStart.minusDays(2).minusHours(6));
         return minimalEvent;
@@ -48,7 +49,7 @@ class EventValidatorTest {
     }
     
     private Event addBadDateToMinimalEvent(Event minimalEvent) {
-        LocalDateTime eventStart = minimalEvent.getEventStart();
+        ZonedDateTime eventStart = minimalEvent.getEventStart();
         minimalEvent.setEventEnd(eventStart.minusDays(1));
         minimalEvent.setDeadlineRVSP(eventStart.plusHours(5));
         return minimalEvent;
@@ -64,7 +65,7 @@ class EventValidatorTest {
     }
     
     private Event addBadRsvpToMinimalEvent(Event minimalEvent) {
-        LocalDateTime eventStart = minimalEvent.getEventStart();
+        ZonedDateTime eventStart = minimalEvent.getEventStart();
         minimalEvent.setDeadlineRVSP(eventStart.plusMinutes(10));
         return minimalEvent;
     }

@@ -2,13 +2,11 @@ package se.knowit.bookitevent.dto;
 
 import se.knowit.bookitevent.model.Event;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 public class EventMapper {
-    private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH);
 
     public Event fromDTO(EventDTO dto) {
         Event event = new Event();
@@ -20,15 +18,22 @@ public class EventMapper {
             event.setEventId(UUID.fromString(dto.getEventId()));
         }
         if (notNullOrBlank(dto.getEventStart())) {
-            event.setEventStart(LocalDateTime.parse(dto.getEventStart(), dateFormatter));
+            event.setEventStart(parseTime(dto.getEventStart()));
         }
         if (notNullOrBlank(dto.getEventEnd())) {
-            event.setEventEnd(LocalDateTime.parse(dto.getEventEnd(), dateFormatter));
+            event.setEventEnd(parseTime(dto.getEventEnd()));
         }
         if (notNullOrBlank(dto.getDeadlineRVSP())) {
-            event.setDeadlineRVSP(LocalDateTime.parse(dto.getDeadlineRVSP(), dateFormatter));
+            event.setDeadlineRVSP(parseTime(dto.getDeadlineRVSP()));
         }
         return event;
+    }
+    
+    /*
+     * Convert "JSON formatted" date strings like '1970-01-01T01:00:00.000Z' to a ZonedDateTime
+     */
+    private ZonedDateTime parseTime(String offsetTimeInput) {
+        return OffsetDateTime.parse(offsetTimeInput).toZonedDateTime();
     }
     
     public EventDTO toDTO(Event event){

@@ -30,29 +30,30 @@ public class BookitEventApplication {
 	@Bean
 	CommandLineRunner init(EventService eventService) {
 		return args -> {
-			ZonedDateTime st = ZonedDateTime.of(2019, 11, 13, 17, 56, 0,0, ZoneId.systemDefault());
+			ZonedDateTime st = ZonedDateTime.of(2019, 12, 6, 18, 0, 0, 0, ZoneId.systemDefault());
 			Event event = new Event();
-			event.setName("DEFAULT_EVENT");
+			event.setName("Julfest");
 			event.setId(1L);
 			event.setEventId(UUID.fromString("72ab7c8b-c0d5-4ab2-8c63-5cf1ad0b439b"));
 			event.setEventStart(st);
-			event.setEventEnd(st.plusHours(2));
-			event.setDeadlineRVSP(st.minusDays(2));
-			event.setLocation("K60");
-			event.setOrganizer("Erik");
-			event.setDescription("Ett himla bra event!");
+			event.setEventEnd(st.plusHours(4));
+			event.setDeadlineRVSP(st.minusDays(27));
+			event.setLocation("Norrmalm");
+			event.setOrganizer("Knowit");
+			event.setDescription("Julbord!");
 			eventService.save(event);
 			
 			event = new Event();
-			event.setName("DEFAULT_EVENT");
+			event.setName("Sierra Nevada");
 			event.setId(2L);
+			st = ZonedDateTime.of(2020, 3, 20, 8, 30, 0, 0, ZoneId.systemDefault());
 			event.setEventId(UUID.fromString("82ab7c8b-c0d5-4ab2-8c63-5cf1ad0b439b"));
-			event.setEventStart(st.plusMonths(6));
-			event.setEventEnd(st.plusMonths(6).plusHours(2));
-			event.setDeadlineRVSP(st.plusMonths(6).minusDays(2));
-			event.setLocation("K60");
-			event.setOrganizer("Erik");
-			event.setDescription("Ännu ett himla bra event!");
+			event.setEventStart(st);
+			event.setEventEnd(st.plusDays(3));
+			event.setDeadlineRVSP(st.minusMonths(2));
+			event.setLocation("Spain");
+			event.setOrganizer("Knowit");
+			event.setDescription("Skidkonferans!");
 			eventService.save(event);
 			
 		};

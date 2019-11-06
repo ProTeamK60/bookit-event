@@ -29,7 +29,7 @@ public class ClientUtilIT {
 		EventDTO eve = restTemplate.getForObject(url, EventDTO.class, par);
 		System.out.println("Id:" + eve.getEventId() + " : " + eve.getName() + " : " + eve.getDescription());
 		assertEquals("72ab7c8b-c0d5-4ab2-8c63-5cf1ad0b439b", eve.getEventId());
-		assertTrue(eve.getDescription().contentEquals("Ett himla bra event!"));
+		assertTrue(eve.getDescription().contentEquals("Julbord!"));
 	}
 
 	@Test
@@ -42,16 +42,14 @@ public class ClientUtilIT {
 		EventDTO[] allEvents = restTemplate.getForObject(url, EventDTO[].class);
 		assertEquals(allEvents.length, 2);
 		
-
 		assertTrue(Arrays.stream(allEvents).map(EventDTO::getEventId).anyMatch(id -> id.equals("72ab7c8b-c0d5-4ab2-8c63-5cf1ad0b439b")));
 
 		assertTrue(Arrays.stream(allEvents).map(EventDTO::getEventId).anyMatch(id -> id.equals("82ab7c8b-c0d5-4ab2-8c63-5cf1ad0b439b")));
 
-
-		assertTrue(Arrays.stream(allEvents).map(EventDTO::getDescription)
-				.anyMatch(des -> des.equals("Ett himla bra event!")));
-		assertTrue(Arrays.stream(allEvents).map(EventDTO::getDescription)
-				.anyMatch(des -> des.equals("Ännu ett himla bra event!")));
+		assertTrue(Arrays.stream(allEvents).map(e -> e.getDescription())
+				.anyMatch(des -> des.equals("Julbord!")));
+		assertTrue(Arrays.stream(allEvents).map(e -> e.getDescription())
+				.anyMatch(des -> des.equals("Skidkonferans!")));
 		Arrays.stream(allEvents).forEach(
 				eve -> System.out.println("Id:" + eve.getEventId() + " : " + eve.getName() + " : " + eve.getDescription()));
 	}

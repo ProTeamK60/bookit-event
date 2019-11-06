@@ -1,6 +1,7 @@
 package se.knowit.bookitevent.service.map;
 
 import se.knowit.bookitevent.model.Event;
+import se.knowit.bookitevent.model.EventValidator;
 import se.knowit.bookitevent.service.EventService;
 
 import java.util.*;
@@ -8,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class EventServiceMapImpl implements EventService {
 	private final Map<Long, Event> map;
+	private final EventValidator eventValidator;
 	
 	public EventServiceMapImpl() {
 		this(new ConcurrentHashMap<>());
@@ -15,6 +17,7 @@ public class EventServiceMapImpl implements EventService {
 	
 	EventServiceMapImpl(Map<Long, Event> map) {
 		this.map = map;
+		eventValidator = new EventValidator();
 	}
 	
 	@Override
@@ -24,7 +27,7 @@ public class EventServiceMapImpl implements EventService {
 
 	@Override
 	public Event save(Event incomingEvent) {
-		Event event = ensureEventIsValidOrThrowException(incomingEvent);
+		Event event = eventValidator.ensureEventIsValidOrThrowException(incomingEvent);
 		assignRequiredIds(event);
 		map.put(event.getId(), event);
 		return event;
@@ -34,6 +37,11 @@ public class EventServiceMapImpl implements EventService {
 		assignPersistenceIdIfNotSet(event);
 		assignEventIdIfNotSet(event);
 	}
+	private void assignPersistenceIdIfNotSet(Event event) {
+		if (event.getId() == null) {
+			event.setId(getNextId());
+		}
+	}
 	
 	private void assignEventIdIfNotSet(Event event) {
 		if (event.getEventId() == null) {
@@ -41,30 +49,6 @@ public class EventServiceMapImpl implements EventService {
 		}
 	}
 	
-	private void assignPersistenceIdIfNotSet(Event event) {
-		if (event.getId() == null) {
-			event.setId(getNextId());
-		}
-	}
-	
-	private Event ensureEventIsValidOrThrowException(Event incomingEvent) {
-		Event event = Objects.requireNonNull(incomingEvent, "Event argument must not be null");
-		ensureNameIsSet(event);
-		ensureStartTimeIsSet(event);
-		return event;
-	}
-	
-	private void ensureStartTimeIsSet(Event event) {
-		if (event.getEventStart() == null){
-			throw new IllegalArgumentException("Event must have a start time");
-		}
-	}
-	
-	private void ensureNameIsSet(Event event) {
-		if (event.getName() == null || event.getName().isBlank()) {
-			throw new IllegalArgumentException("Event must have a name");
-		}
-	}
 	
 	private Long getNextId() {
 		try {

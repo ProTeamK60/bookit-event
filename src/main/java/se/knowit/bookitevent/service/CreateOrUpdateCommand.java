@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 
-public class SaveOrUpdateCommand implements Function<EventDTO, SaveOrUpdateCommand.CommandResult> {
+public class CreateOrUpdateCommand implements Function<EventDTO, CreateOrUpdateCommand.CommandResult> {
     
     public enum Outcome {CREATED, UPDATED, FAILED}
     
@@ -47,7 +47,7 @@ public class SaveOrUpdateCommand implements Function<EventDTO, SaveOrUpdateComma
     
     private final EventService service;
     
-    public SaveOrUpdateCommand(EventService service) {
+    public CreateOrUpdateCommand(EventService service) {
         this.service = Objects.requireNonNull(service);
     }
     
@@ -57,10 +57,10 @@ public class SaveOrUpdateCommand implements Function<EventDTO, SaveOrUpdateComma
         Event event = mapper.fromDTO(eventDTO);
         Outcome shouldBe = null;
         if (event.getEventId() == null) {
-            shouldBe=Outcome.CREATED;
+            shouldBe = Outcome.CREATED;
         }
         if (event.getEventId() != null) {
-            shouldBe=Outcome.UPDATED;
+            shouldBe = Outcome.UPDATED;
         }
         try {
             Event saved = service.save(event);

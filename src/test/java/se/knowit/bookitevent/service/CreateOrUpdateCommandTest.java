@@ -16,13 +16,13 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class SaveOrUpdateCommandTest {
+class CreateOrUpdateCommandTest {
     private static final String EVENT_ID = "ea4ab6c0-8a73-4e9b-b28a-7bb9e0f87b18";
     @Mock
     private EventService service;
     
     @InjectMocks
-    private SaveOrUpdateCommand command;
+    private CreateOrUpdateCommand command;
     
     private final Event invalidNewEvent = new Event();
     private final EventDTO invalidNewDto = new EventDTO();
@@ -51,8 +51,8 @@ class SaveOrUpdateCommandTest {
     @Test
     void savingANewValidEventShouldReturnOutcomeCreated() {
         when(service.save(eq(validNewEvent))).thenReturn(forUpdateEvent);
-        SaveOrUpdateCommand.CommandResult result = command.apply(validNewDTO);
-        assertEquals(SaveOrUpdateCommand.Outcome.CREATED, result.getOutcome());
+        CreateOrUpdateCommand.CommandResult result = command.apply(validNewDTO);
+        assertEquals(CreateOrUpdateCommand.Outcome.CREATED, result.getOutcome());
         assertTrue(result.getEventId().isPresent());
         assertEquals(forUpdateEvent.getEventId(), result.getEventId().get());
     }
@@ -60,8 +60,8 @@ class SaveOrUpdateCommandTest {
     @Test
     void updatingExistingEventShouldReturnOutcomeUpdated() {
         when(service.save(eq(forUpdateEvent))).thenReturn(forUpdateEvent);
-        SaveOrUpdateCommand.CommandResult result = command.apply(forUpdateDto);
-        assertEquals(SaveOrUpdateCommand.Outcome.UPDATED, result.getOutcome());
+        CreateOrUpdateCommand.CommandResult result = command.apply(forUpdateDto);
+        assertEquals(CreateOrUpdateCommand.Outcome.UPDATED, result.getOutcome());
         assertTrue(result.getEventId().isPresent());
         assertEquals(forUpdateEvent.getEventId(), result.getEventId().get());
     }
@@ -69,8 +69,8 @@ class SaveOrUpdateCommandTest {
     @Test
     void savingInvalidEventShouldReturnOutcomeFailed() {
         when(service.save(eq(invalidNewEvent))).thenThrow(IllegalArgumentException.class);
-        SaveOrUpdateCommand.CommandResult result = command.apply(invalidNewDto);
-        assertEquals(SaveOrUpdateCommand.Outcome.FAILED, result.getOutcome());
+        CreateOrUpdateCommand.CommandResult result = command.apply(invalidNewDto);
+        assertEquals(CreateOrUpdateCommand.Outcome.FAILED, result.getOutcome());
         assertTrue(result.getEventId().isEmpty());
         assertTrue(result.getThrowable().isPresent());
         assertEquals(IllegalArgumentException.class, result.getThrowable().get().getClass());

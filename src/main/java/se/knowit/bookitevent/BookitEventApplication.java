@@ -10,7 +10,8 @@ import org.springframework.context.annotation.Bean;
 import se.knowit.bookitevent.model.Event;
 import se.knowit.bookitevent.service.EventService;
 
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 
@@ -29,7 +30,7 @@ public class BookitEventApplication {
 	@Bean
 	CommandLineRunner init(EventService eventService) {
 		return args -> {
-			LocalDateTime st = LocalDateTime.of(2019, 12, 6, 18, 00);
+			ZonedDateTime st = ZonedDateTime.of(2019, 12, 6, 18, 0, 0, 0, ZoneId.systemDefault());
 			Event event = new Event();
 			event.setName("Julfest");
 			event.setId(1L);
@@ -45,7 +46,7 @@ public class BookitEventApplication {
 			event = new Event();
 			event.setName("Sierra Nevada");
 			event.setId(2L);
-			st = LocalDateTime.of(2020, 3, 20, 8, 30);
+			st = ZonedDateTime.of(2020, 3, 20, 8, 30, 0, 0, ZoneId.systemDefault());
 			event.setEventId(UUID.fromString("82ab7c8b-c0d5-4ab2-8c63-5cf1ad0b439b"));
 			event.setEventStart(st);
 			event.setEventEnd(st.plusDays(3));

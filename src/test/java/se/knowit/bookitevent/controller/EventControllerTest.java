@@ -16,7 +16,8 @@ import se.knowit.bookitevent.dto.EventMapper;
 import se.knowit.bookitevent.model.Event;
 import se.knowit.bookitevent.service.EventService;
 
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
@@ -38,7 +39,7 @@ class EventControllerTest {
     private static final Event DEFAULT_EVENT = buildDefaultEvent();
     
     private static Event buildDefaultEvent() {
-        LocalDateTime startTime = LocalDateTime.of(2019, 11, 13, 17, 56);
+        ZonedDateTime startTime = ZonedDateTime.of(2019, 11, 13, 17, 56,0,0, ZoneId.systemDefault());
         Event event = new Event();
         event.setName("DEFAULT_EVENT");
         event.setId(DEFAULT_ID);
@@ -104,9 +105,9 @@ class EventControllerTest {
         String incomingJson = "{\"eventId\":\"\"," +
                 "\"name\":\"A test event\"," +
                 "\"description\":\"Test description\"," +
-                "\"eventStart\":\"1970-01-02T01:00:00\"," +
-                "\"eventEnd\":\"1970-01-02T01:01:00\"," +
-                "\"deadlineRVSP\":\"1970-01-01T18:00:00\"," +
+                "\"eventStart\":\"1970-01-02T01:00:00.000Z\"," +
+                "\"eventEnd\":\"1970-01-02T01:01:00.000Z\"," +
+                "\"deadlineRVSP\":\"1970-01-01T18:00:00.000Z\"," +
                 "\"location\":\"K60\"," +
                 "\"organizer\":\"Ola\"}";
     
@@ -137,9 +138,9 @@ class EventControllerTest {
                 "\"," +
                 "\"name\":\"A test event\"," +
                 "\"description\":\"Test description\"," +
-                "\"eventStart\":\"1970-01-02T01:00:00\"," +
-                "\"eventEnd\":\"1970-01-02T01:01:00\"," +
-                "\"deadlineRVSP\":\"1970-01-01T18:00:00\"," +
+                "\"eventStart\":\"1970-01-02T01:00:00.000Z\"," +
+                "\"eventEnd\":\"1970-01-02T01:01:00.000Z\"," +
+                "\"deadlineRVSP\":\"1970-01-01T18:00:00.000Z\"," +
                 "\"location\":\"K60\"," +
                 "\"organizer\":\"Ola\"}";
     

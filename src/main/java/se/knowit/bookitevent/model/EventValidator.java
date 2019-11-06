@@ -1,6 +1,6 @@
 package se.knowit.bookitevent.model;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 
 public class EventValidator {
@@ -35,16 +35,16 @@ public class EventValidator {
     }
     
     private void ensureEndIsAfterStart(Event event) {
-        LocalDateTime eventStart = event.getEventStart();
-        LocalDateTime eventEnd = event.getEventEnd();
+        ZonedDateTime eventStart = event.getEventStart();
+        ZonedDateTime eventEnd = event.getEventEnd();
         if (eventEnd != null && eventStart.isAfter(eventEnd)) {
             throw new IllegalArgumentException(String.format(END_TIME_ERROR_TEMPLATE, eventEnd, eventStart));
         }
     }
     
     private void ensureRsvpIsBeforeStart(Event event) {
-        LocalDateTime eventStart = event.getEventStart();
-        LocalDateTime deadlineRVSP = event.getDeadlineRVSP();
+        ZonedDateTime eventStart = event.getEventStart();
+        ZonedDateTime deadlineRVSP = event.getDeadlineRVSP();
         if (deadlineRVSP != null && eventStart.isBefore(deadlineRVSP)) {
             throw new IllegalArgumentException(String.format(RSVP_ERROR_TEMPLATE, deadlineRVSP, eventStart));
         }

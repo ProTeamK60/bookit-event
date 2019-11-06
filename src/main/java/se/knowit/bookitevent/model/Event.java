@@ -6,7 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -20,9 +20,9 @@ public class Event {
 	private UUID eventId;
 	private String name;
 	private String description;
-	private LocalDateTime eventStart;
-	private LocalDateTime eventEnd;
-	private LocalDateTime deadlineRVSP;
+	private ZonedDateTime eventStart;
+	private ZonedDateTime eventEnd;
+	private ZonedDateTime deadlineRVSP;
 	private String location;
 	private String organizer;
 

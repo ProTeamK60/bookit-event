@@ -1,19 +1,20 @@
 package se.knowit.bookitevent;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
-import se.knowit.bookitevent.model.Event;
+import se.knowit.bookitevent.dto.EventDTO;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ClientUtilIT {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-	
+public class ClientUtilIT {
+ 
 	String hostname = "localhost", port = "8080";
 	
 	@Test
@@ -25,10 +26,10 @@ public class ClientUtilIT {
 
 		Map<String, String> par = new HashMap<>();
 		par.put("id", "72ab7c8b-c0d5-4ab2-8c63-5cf1ad0b439b");
-		Event eve = restTemplate.getForObject(url, Event.class, par);
-		System.out.println("Id:" + eve.getId() + " : " + eve.getName() + " : " + eve.getDescription());
-		Assertions.assertTrue(eve.getId() == 1L);
-		Assertions.assertTrue(eve.getDescription().contentEquals("Ett himla bra event!"));
+		EventDTO eve = restTemplate.getForObject(url, EventDTO.class, par);
+		System.out.println("Id:" + eve.getEventId() + " : " + eve.getName() + " : " + eve.getDescription());
+		assertEquals("72ab7c8b-c0d5-4ab2-8c63-5cf1ad0b439b", eve.getEventId());
+		assertTrue(eve.getDescription().contentEquals("Ett himla bra event!"));
 	}
 
 	@Test
@@ -38,19 +39,21 @@ public class ClientUtilIT {
 		RestTemplate restTemplate = new RestTemplate();
 		String url = "http://" + hostname + ":" + port + "/api/v1/events";
 
-		Event[] allEvents = restTemplate.getForObject(url, Event[].class);
-		Assertions.assertEquals(allEvents.length, 2);
+		EventDTO[] allEvents = restTemplate.getForObject(url, EventDTO[].class);
+		assertEquals(allEvents.length, 2);
+		
 
-		Assertions.assertTrue(Arrays.stream(allEvents).map(e -> e.getId()).anyMatch(id -> id.equals(1L)));
+		assertTrue(Arrays.stream(allEvents).map(EventDTO::getEventId).anyMatch(id -> id.equals("72ab7c8b-c0d5-4ab2-8c63-5cf1ad0b439b")));
 
-		Assertions.assertTrue(Arrays.stream(allEvents).map(e -> e.getId()).anyMatch(id -> id.equals(2L)));
+		assertTrue(Arrays.stream(allEvents).map(EventDTO::getEventId).anyMatch(id -> id.equals("82ab7c8b-c0d5-4ab2-8c63-5cf1ad0b439b")));
 
-		Assertions.assertTrue(Arrays.stream(allEvents).map(e -> e.getDescription())
+
+		assertTrue(Arrays.stream(allEvents).map(EventDTO::getDescription)
 				.anyMatch(des -> des.equals("Ett himla bra event!")));
-		Assertions.assertTrue(Arrays.stream(allEvents).map(e -> e.getDescription())
+		assertTrue(Arrays.stream(allEvents).map(EventDTO::getDescription)
 				.anyMatch(des -> des.equals("Ännu ett himla bra event!")));
 		Arrays.stream(allEvents).forEach(
-				eve -> System.out.println("Id:" + eve.getId() + " : " + eve.getName() + " : " + eve.getDescription()));
+				eve -> System.out.println("Id:" + eve.getEventId() + " : " + eve.getName() + " : " + eve.getDescription()));
 	}
 
 }

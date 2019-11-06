@@ -47,8 +47,8 @@ public class BookitEventApplication {
 			event.setId(2L);
 			event.setEventId(UUID.fromString("82ab7c8b-c0d5-4ab2-8c63-5cf1ad0b439b"));
 			event.setEventStart(st.plusMonths(6));
-			event.setEventEnd(st.plusHours(2));
-			event.setDeadlineRVSP(st.minusDays(2));
+			event.setEventEnd(st.plusMonths(6).plusHours(2));
+			event.setDeadlineRVSP(st.plusMonths(6).minusDays(2));
 			event.setLocation("K60");
 			event.setOrganizer("Erik");
 			event.setDescription("Ännu ett himla bra event!");

@@ -54,4 +54,18 @@ class EventValidatorTest {
         return minimalEvent;
     }
     
+    @Test
+    void ensureEventWithIncorrectRsvpDateIsInvalid() {
+        assertThrows(IllegalArgumentException.class, this::executeValidationWithBadRsvpSettings);
+    }
+    
+    private void executeValidationWithBadRsvpSettings() {
+        eventValidator.ensureEventIsValidOrThrowException(addBadRsvpToMinimalEvent(createMinimalEvent()));
+    }
+    
+    private Event addBadRsvpToMinimalEvent(Event minimalEvent) {
+        LocalDateTime eventStart = minimalEvent.getEventStart();
+        minimalEvent.setDeadlineRVSP(eventStart.plusMinutes(10));
+        return minimalEvent;
+    }
 }

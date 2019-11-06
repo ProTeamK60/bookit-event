@@ -46,13 +46,13 @@ public class EventMapper {
             dto.setEventId(event.getEventId().toString());
         }
         if (event.getEventStart() != null) {
-            dto.setEventStart(event.getEventStart().toString());
+            dto.setEventStart(event.getEventStart().toOffsetDateTime().toString());
         }
         if (event.getEventEnd() != null) {
-            dto.setEventEnd(event.getEventEnd().toString());
+            dto.setEventEnd(event.getEventEnd().toOffsetDateTime().toString());
         }
         if (event.getDeadlineRVSP() != null) {
-            dto.setDeadlineRVSP(event.getDeadlineRVSP().toString());
+            dto.setDeadlineRVSP(event.getDeadlineRVSP().toOffsetDateTime().toString());
         }
         return dto;
     }

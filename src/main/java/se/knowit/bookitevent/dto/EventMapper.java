@@ -3,10 +3,13 @@ package se.knowit.bookitevent.dto;
 import se.knowit.bookitevent.model.Event;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.UUID;
 
 public class EventMapper {
-    
+    private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH);
+
     public Event fromDTO(EventDTO dto) {
         Event event = new Event();
         event.setName(dto.getName());
@@ -17,13 +20,13 @@ public class EventMapper {
             event.setEventId(UUID.fromString(dto.getEventId()));
         }
         if (notNullOrBlank(dto.getEventStart())) {
-            event.setEventStart(LocalDateTime.parse(dto.getEventStart()));
+            event.setEventStart(LocalDateTime.parse(dto.getEventStart(), dateFormatter));
         }
         if (notNullOrBlank(dto.getEventEnd())) {
-            event.setEventEnd(LocalDateTime.parse(dto.getEventEnd()));
+            event.setEventEnd(LocalDateTime.parse(dto.getEventEnd(), dateFormatter));
         }
         if (notNullOrBlank(dto.getDeadlineRVSP())) {
-            event.setDeadlineRVSP(LocalDateTime.parse(dto.getDeadlineRVSP()));
+            event.setDeadlineRVSP(LocalDateTime.parse(dto.getDeadlineRVSP(), dateFormatter));
         }
         return event;
     }

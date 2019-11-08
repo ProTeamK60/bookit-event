@@ -14,8 +14,12 @@ import se.knowit.bookitevent.service.EventService;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URI;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toSet;
 import static se.knowit.bookitevent.service.CreateOrUpdateCommand.Outcome.CREATED;
@@ -42,12 +46,18 @@ public class EventController {
         if (allEvents.isEmpty()) {
             throw notFound();
         }
-        EventMapper mapper = new EventMapper();
-        return allEvents.stream()
-				.map(mapper::toDTO)
-				.collect(toSet());
-    }
-    
+		// apply sorting by EventStart
+		List<Event> events = allEvents.stream().collect(Collectors.toList());
+		Comparator<Event> eventComparator = Comparator.comparing(Event::getEventStart);
+		Collections.sort(events, eventComparator);
+
+		// printouts for testing purpose
+		events.stream().forEach(a -> System.out.println(a.getEventStart()));
+
+		EventMapper mapper = new EventMapper();
+		return events.stream().map(mapper::toDTO).collect(toSet());
+	}
+
     @GetMapping("/{id}")
     public EventDTO findById(@PathVariable String id) {
         Event event = eventService.findByEventId(UUID.fromString(id)).orElseThrow(this::notFound);

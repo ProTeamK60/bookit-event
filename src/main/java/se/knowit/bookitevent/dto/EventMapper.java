@@ -2,12 +2,12 @@ package se.knowit.bookitevent.dto;
 
 import se.knowit.bookitevent.model.Event;
 
-import java.time.OffsetDateTime;
-import java.time.ZonedDateTime;
+import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 public class EventMapper {
-
+    
     public Event fromDTO(EventDTO dto) {
         Event event = new Event();
         event.setName(dto.getName());
@@ -17,26 +17,13 @@ public class EventMapper {
         if (notNullOrBlank(dto.getEventId())) {
             event.setEventId(UUID.fromString(dto.getEventId()));
         }
-        if (notNullOrBlank(dto.getEventStart())) {
-            event.setEventStart(parseTime(dto.getEventStart()));
-        }
-        if (notNullOrBlank(dto.getEventEnd())) {
-            event.setEventEnd(parseTime(dto.getEventEnd()));
-        }
-        if (notNullOrBlank(dto.getDeadlineRVSP())) {
-            event.setDeadlineRVSP(parseTime(dto.getDeadlineRVSP()));
-        }
+        event.setEventStart(getInstant(dto.getEventStart()));
+        event.setEventEnd(getInstant(dto.getEventEnd()));
+        event.setDeadlineRVSP(getInstant(dto.getDeadlineRVSP()));
         return event;
     }
     
-    /*
-     * Convert "JSON formatted" date strings like '1970-01-01T01:00:00.000Z' to a ZonedDateTime
-     */
-    private ZonedDateTime parseTime(String offsetTimeInput) {
-        return OffsetDateTime.parse(offsetTimeInput).toZonedDateTime();
-    }
-    
-    public EventDTO toDTO(Event event){
+    public EventDTO toDTO(Event event) {
         EventDTO dto = new EventDTO();
         dto.setName(event.getName());
         dto.setDescription(event.getDescription());
@@ -45,19 +32,22 @@ public class EventMapper {
         if (event.getEventId() != null) {
             dto.setEventId(event.getEventId().toString());
         }
-        if (event.getEventStart() != null) {
-            dto.setEventStart(event.getEventStart().toOffsetDateTime().toString());
-        }
-        if (event.getEventEnd() != null) {
-            dto.setEventEnd(event.getEventEnd().toOffsetDateTime().toString());
-        }
-        if (event.getDeadlineRVSP() != null) {
-            dto.setDeadlineRVSP(event.getDeadlineRVSP().toOffsetDateTime().toString());
-        }
+        Instant eventStart = event.getEventStart();
+        Long epochMilli = getEpochMilli(eventStart);
+        Instant instant = getInstant(epochMilli);
+        dto.setEventStart(epochMilli);
+        dto.setEventEnd(getEpochMilli(event.getEventEnd()));
+        dto.setDeadlineRVSP(getEpochMilli(event.getDeadlineRVSP()));
         return dto;
     }
     
     private boolean notNullOrBlank(String test) {
         return test != null && !test.isBlank();
+    }
+    private Instant getInstant(Long input) {
+        return Optional.ofNullable(input).map(Instant::ofEpochMilli).orElse(null);
+    }
+    private Long getEpochMilli(Instant input) {
+        return Optional.ofNullable(input).map(Instant::toEpochMilli).orElse(null);
     }
 }

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import se.knowit.bookitevent.model.Event;
 
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Map;
@@ -12,6 +13,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static java.time.temporal.ChronoUnit.DAYS;
+import static java.time.temporal.ChronoUnit.HOURS;
 import static org.junit.jupiter.api.Assertions.*;
 
 class EventServiceMapImplTest {
@@ -20,14 +23,14 @@ class EventServiceMapImplTest {
     private static final Event DEFAULT_EVENT = buildDefaultEvent();
     
     private static Event buildDefaultEvent() {
-        ZonedDateTime startTime = ZonedDateTime.of(2019, 11, 13, 17, 56,0,0, ZoneId.systemDefault());
+        Instant startTime = ZonedDateTime.of(2019, 11, 13, 17, 56,0,0, ZoneId.systemDefault()).toInstant();
         Event event = new Event();
         event.setName("DEFAULT_EVENT");
         event.setId(DEFAULT_ID);
         event.setEventId(DEFAULT_UUID);
         event.setEventStart(startTime);
-        event.setEventEnd(startTime.plusHours(2));
-        event.setDeadlineRVSP(startTime.minusDays(2));
+        event.setEventEnd(startTime.plus(2, HOURS));
+        event.setDeadlineRVSP(startTime.minus(2, DAYS));
         event.setLocation("K60");
         event.setOrganizer("Erik");
         event.setDescription("Ett himla bra event!");
@@ -87,7 +90,7 @@ class EventServiceMapImplTest {
     private Event getValidTestEvent() {
         Event event = new Event();
         event.setName("Test event");
-        event.setEventStart(ZonedDateTime.now());
+        event.setEventStart(Instant.now());
         return event;
     }
     

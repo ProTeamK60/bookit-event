@@ -35,9 +35,9 @@ public class BookitEventApplication {
 			event.setName("Julfest");
 			event.setId(1L);
 			event.setEventId(UUID.fromString("72ab7c8b-c0d5-4ab2-8c63-5cf1ad0b439b"));
-			event.setEventStart(st);
-			event.setEventEnd(st.plusHours(4));
-			event.setDeadlineRVSP(st.minusDays(27));
+			event.setEventStart(st.toInstant());
+			event.setEventEnd(st.plusHours(4).toInstant());
+			event.setDeadlineRVSP(st.minusDays(27).toInstant());
 			event.setLocation("Norrmalm");
 			event.setOrganizer("Knowit");
 			event.setDescription("Julbord!");
@@ -48,9 +48,9 @@ public class BookitEventApplication {
 			event.setId(2L);
 			st = ZonedDateTime.of(2020, 3, 20, 8, 30, 0, 0, ZoneId.systemDefault());
 			event.setEventId(UUID.fromString("82ab7c8b-c0d5-4ab2-8c63-5cf1ad0b439b"));
-			event.setEventStart(st);
-			event.setEventEnd(st.plusDays(3));
-			event.setDeadlineRVSP(st.minusMonths(2));
+			event.setEventStart(st.toInstant());
+			event.setEventEnd(st.plusDays(3).toInstant());
+			event.setDeadlineRVSP(st.minusMonths(2).toInstant());
 			event.setLocation("Spain");
 			event.setOrganizer("Knowit");
 			event.setDescription("Skidkonferans!");

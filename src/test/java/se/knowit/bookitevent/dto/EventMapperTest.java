@@ -4,8 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import se.knowit.bookitevent.model.Event;
 
+import java.time.Instant;
 import java.time.OffsetDateTime;
-import java.time.ZonedDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -19,9 +19,9 @@ class EventMapperTest {
         EventDTO eventDTO = new EventDTO();
         eventDTO.setName("A test event");
         eventDTO.setDescription("Test description");
-        eventDTO.setEventStart("1970-01-02T01:00:00.000Z");
-        eventDTO.setEventEnd("1970-01-02T01:01:00.000Z");
-        eventDTO.setDeadlineRVSP("1970-01-01T18:00:00.000Z");
+        eventDTO.setEventStart(parseTime("1970-01-02T01:00:00.000Z").toEpochMilli());
+        eventDTO.setEventEnd(parseTime("1970-01-02T01:01:00.000Z").toEpochMilli());
+        eventDTO.setDeadlineRVSP(parseTime("1970-01-01T18:00:00.000Z").toEpochMilli());
         eventDTO.setLocation("K60");
         eventDTO.setOrganizer("Ola");
         dtoFixture = eventDTO;
@@ -36,8 +36,8 @@ class EventMapperTest {
         eventFixture = event;
     }
     
-    private ZonedDateTime parseTime(String eventStart) {
-        return OffsetDateTime.parse(eventStart).toZonedDateTime();
+    private Instant parseTime(String timeStringWithOffset) {
+        return OffsetDateTime.parse(timeStringWithOffset).toInstant();
     }
     
     @Test
@@ -46,9 +46,9 @@ class EventMapperTest {
         Event event = mapper.fromDTO(dtoFixture);
         assertEquals(dtoFixture.getName(), event.getName());
         assertEquals(dtoFixture.getDescription(), event.getDescription());
-        assertEquals(parseTime(dtoFixture.getEventStart()), event.getEventStart());
-        assertEquals(parseTime(dtoFixture.getEventEnd()), event.getEventEnd());
-        assertEquals(parseTime(dtoFixture.getDeadlineRVSP()), event.getDeadlineRVSP());
+        assertEquals(dtoFixture.getEventStart(), event.getEventStart().toEpochMilli());
+        assertEquals(dtoFixture.getEventEnd(), event.getEventEnd().toEpochMilli());
+        assertEquals(dtoFixture.getDeadlineRVSP(), event.getDeadlineRVSP().toEpochMilli());
         assertEquals(dtoFixture.getLocation(), event.getLocation());
         assertEquals(dtoFixture.getOrganizer(), event.getOrganizer());
     }
@@ -59,9 +59,11 @@ class EventMapperTest {
         EventDTO dto = mapper.toDTO(eventFixture);
         assertEquals(eventFixture.getName(), dto.getName());
         assertEquals(eventFixture.getDescription(), dto.getDescription());
-        assertEquals(eventFixture.getEventStart(), parseTime(dto.getEventStart()));
-        assertEquals(eventFixture.getEventEnd(), parseTime(dto.getEventEnd()));
-        assertEquals(eventFixture.getDeadlineRVSP(), parseTime(dto.getDeadlineRVSP()));
+        Long eventStart = dto.getEventStart();
+        Long toEpochMilli = eventFixture.getEventStart().toEpochMilli();
+        assertEquals(toEpochMilli, eventStart);
+        assertEquals(eventFixture.getEventEnd().toEpochMilli(), dto.getEventEnd());
+        assertEquals(eventFixture.getDeadlineRVSP().toEpochMilli(), dto.getDeadlineRVSP());
         assertEquals(eventFixture.getLocation(), dto.getLocation());
         assertEquals(eventFixture.getOrganizer(), dto.getOrganizer());
     }

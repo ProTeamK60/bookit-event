@@ -16,6 +16,7 @@ import se.knowit.bookitevent.dto.EventMapper;
 import se.knowit.bookitevent.model.Event;
 import se.knowit.bookitevent.service.EventService;
 
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collections;
@@ -23,6 +24,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import static java.time.temporal.ChronoUnit.DAYS;
+import static java.time.temporal.ChronoUnit.HOURS;
 import static org.hamcrest.text.MatchesPattern.matchesPattern;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -39,14 +42,14 @@ class EventControllerTest {
     private static final Event DEFAULT_EVENT = buildDefaultEvent();
     
     private static Event buildDefaultEvent() {
-        ZonedDateTime startTime = ZonedDateTime.of(2019, 11, 13, 17, 56,0,0, ZoneId.systemDefault());
+        Instant startTime = ZonedDateTime.of(2019, 11, 13, 17, 56,0,0, ZoneId.systemDefault()).toInstant();
         Event event = new Event();
         event.setName("DEFAULT_EVENT");
         event.setId(DEFAULT_ID);
         event.setEventId(DEFAULT_UUID);
         event.setEventStart(startTime);
-        event.setEventEnd(startTime.plusHours(2));
-        event.setDeadlineRVSP(startTime.minusDays(2));
+        event.setEventEnd(startTime.plus(2, HOURS));
+        event.setDeadlineRVSP(startTime.minus(2, DAYS));
         event.setLocation("K60");
         event.setOrganizer("Erik");
         event.setDescription("Ett himla bra event!");
@@ -105,9 +108,9 @@ class EventControllerTest {
         String incomingJson = "{\"eventId\":\"\"," +
                 "\"name\":\"A test event\"," +
                 "\"description\":\"Test description\"," +
-                "\"eventStart\":\"1970-01-02T01:00:00.000Z\"," +
-                "\"eventEnd\":\"1970-01-02T01:01:00.000Z\"," +
-                "\"deadlineRVSP\":\"1970-01-01T18:00:00.000Z\"," +
+                "\"eventStart\":90000000," +
+                "\"eventEnd\":90060000," +
+                "\"deadlineRVSP\":64800000," +
                 "\"location\":\"K60\"," +
                 "\"organizer\":\"Ola\"}";
     
@@ -138,9 +141,9 @@ class EventControllerTest {
                 "\"," +
                 "\"name\":\"A test event\"," +
                 "\"description\":\"Test description\"," +
-                "\"eventStart\":\"1970-01-02T01:00:00.000Z\"," +
-                "\"eventEnd\":\"1970-01-02T01:01:00.000Z\"," +
-                "\"deadlineRVSP\":\"1970-01-01T18:00:00.000Z\"," +
+                "\"eventStart\":90000000," +
+                "\"eventEnd\":90060000," +
+                "\"deadlineRVSP\":64800000," +
                 "\"location\":\"K60\"," +
                 "\"organizer\":\"Ola\"}";
     

@@ -10,6 +10,8 @@ import se.knowit.bookitevent.dto.EventDTO;
 import se.knowit.bookitevent.dto.EventMapper;
 import se.knowit.bookitevent.model.Event;
 
+import java.time.Instant;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
@@ -38,12 +40,12 @@ class CreateOrUpdateCommandTest {
         EventMapper mapper = new EventMapper();
         validNewDTO = new EventDTO();
         validNewDTO.setName("A test event");
-        validNewDTO.setEventStart("1970-01-02T01:00:00.000Z");
+        validNewDTO.setEventStart(Instant.parse("1970-01-02T01:00:00.000Z").toEpochMilli());
         validNewEvent = mapper.fromDTO(validNewDTO);
     
         forUpdateDto = new EventDTO();
         forUpdateDto.setName("A test event");
-        forUpdateDto.setEventStart("1970-01-02T01:00:00.000Z");
+        forUpdateDto.setEventStart(Instant.parse("1970-01-02T01:00:00.000Z").toEpochMilli());
         forUpdateDto.setEventId(EVENT_ID);
         forUpdateEvent = mapper.fromDTO(forUpdateDto);
     }

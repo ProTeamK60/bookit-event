@@ -2,9 +2,11 @@ package se.knowit.bookitevent.model;
 
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+import static java.time.temporal.ChronoUnit.*;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -19,7 +21,7 @@ class EventValidatorTest {
     private Event createMinimalEvent() {
         Event event = new Event();
         event.setName("TV event");
-        event.setEventStart(ZonedDateTime.of(2019, 12, 24, 15, 0, 0,0, ZoneId.systemDefault()));
+        event.setEventStart(ZonedDateTime.of(2019, 12, 24, 15, 0, 0,0, ZoneId.systemDefault()).toInstant());
         return event;
     }
     
@@ -33,12 +35,29 @@ class EventValidatorTest {
     }
     
     private Event addCorrectDateToMinimalEvent(Event minimalEvent) {
-        ZonedDateTime eventStart = minimalEvent.getEventStart();
-        minimalEvent.setEventEnd(eventStart.plusHours(2));
-        minimalEvent.setDeadlineRVSP(eventStart.minusDays(2).minusHours(6));
+        Instant eventStart = minimalEvent.getEventStart();
+        minimalEvent.setEventEnd(plusDays(eventStart, 2));
+        minimalEvent.setDeadlineRVSP(minusDays(minusHours(eventStart, 6), 2));
         return minimalEvent;
     }
+    private Instant minusHours(Instant base, Integer amount){
+        return base.minus(amount, HOURS);
+    }
+    private Instant minusDays(Instant eventStart, Integer amount) {
+        return eventStart.minus(amount, DAYS);
+    }
     
+    private Instant plusDays(Instant base, Integer amount) {
+        return base.plus(amount, DAYS);
+    }
+    
+    private Instant plusHours(Instant base, Integer amount) {
+        return base.plus(amount, HOURS);
+    }
+    
+    private Instant plusMinutes(Instant base, Integer amount) {
+        return base.plus(amount, MINUTES);
+    }
     @Test
     void ensureEventWithBadDateTimeSpecificationIsNotValid() {
         assertThrows(IllegalArgumentException.class, this::executeValidationWithBadDateSettings);
@@ -49,9 +68,9 @@ class EventValidatorTest {
     }
     
     private Event addBadDateToMinimalEvent(Event minimalEvent) {
-        ZonedDateTime eventStart = minimalEvent.getEventStart();
-        minimalEvent.setEventEnd(eventStart.minusDays(1));
-        minimalEvent.setDeadlineRVSP(eventStart.plusHours(5));
+        Instant eventStart = minimalEvent.getEventStart();
+        minimalEvent.setEventEnd(minusDays(eventStart, 1));
+        minimalEvent.setDeadlineRVSP(plusHours(eventStart, 5));
         return minimalEvent;
     }
     
@@ -65,8 +84,8 @@ class EventValidatorTest {
     }
     
     private Event addBadRsvpToMinimalEvent(Event minimalEvent) {
-        ZonedDateTime eventStart = minimalEvent.getEventStart();
-        minimalEvent.setDeadlineRVSP(eventStart.plusMinutes(10));
+        Instant eventStart = minimalEvent.getEventStart();
+        minimalEvent.setDeadlineRVSP(plusMinutes(eventStart,10));
         return minimalEvent;
     }
 }

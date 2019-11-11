@@ -2,11 +2,18 @@ package se.knowit.bookitevent.dto;
 
 import se.knowit.bookitevent.model.Event;
 
-import java.time.Instant;
-import java.util.Optional;
 import java.util.UUID;
 
 public class EventMapper {
+    private TimeSupport timeSupport;
+    
+    public EventMapper() {
+        this(new TimeSupportImpl());
+    }
+    
+    public EventMapper(TimeSupport timeSupport) {
+        this.timeSupport = timeSupport;
+    }
     
     public Event fromDTO(EventDTO dto) {
         Event event = new Event();
@@ -17,9 +24,9 @@ public class EventMapper {
         if (notNullOrBlank(dto.getEventId())) {
             event.setEventId(UUID.fromString(dto.getEventId()));
         }
-        event.setEventStart(getInstant(dto.getEventStart()));
-        event.setEventEnd(getInstant(dto.getEventEnd()));
-        event.setDeadlineRVSP(getInstant(dto.getDeadlineRVSP()));
+        event.setEventStart(timeSupport.getInstantFromEpochMilli(dto.getEventStart()));
+        event.setEventEnd(timeSupport.getInstantFromEpochMilli(dto.getEventEnd()));
+        event.setDeadlineRVSP(timeSupport.getInstantFromEpochMilli(dto.getDeadlineRVSP()));
         return event;
     }
     
@@ -32,22 +39,14 @@ public class EventMapper {
         if (event.getEventId() != null) {
             dto.setEventId(event.getEventId().toString());
         }
-        Instant eventStart = event.getEventStart();
-        Long epochMilli = getEpochMilli(eventStart);
-        Instant instant = getInstant(epochMilli);
-        dto.setEventStart(epochMilli);
-        dto.setEventEnd(getEpochMilli(event.getEventEnd()));
-        dto.setDeadlineRVSP(getEpochMilli(event.getDeadlineRVSP()));
+        dto.setEventStart(timeSupport.getEpochMilliFromInstant(event.getEventStart()));
+        dto.setEventEnd(timeSupport.getEpochMilliFromInstant(event.getEventEnd()));
+        dto.setDeadlineRVSP(timeSupport.getEpochMilliFromInstant(event.getDeadlineRVSP()));
         return dto;
     }
     
     private boolean notNullOrBlank(String test) {
         return test != null && !test.isBlank();
     }
-    private Instant getInstant(Long input) {
-        return Optional.ofNullable(input).map(Instant::ofEpochMilli).orElse(null);
-    }
-    private Long getEpochMilli(Instant input) {
-        return Optional.ofNullable(input).map(Instant::toEpochMilli).orElse(null);
-    }
+   
 }

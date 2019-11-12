@@ -1,32 +1,22 @@
 package se.knowit.bookitevent;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.net.URI;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import se.knowit.bookitevent.dto.EventDTO;
-import se.knowit.bookitevent.dto.EventMapper;
-import se.knowit.bookitevent.model.Event;
-
-import java.net.URI;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ClientUtilIT {
  
@@ -71,7 +61,7 @@ public class ClientUtilIT {
 	
 
 	@Test
-	public void testCreateNewEvent() throws JsonProcessingException {
+	public void testCreateNewEvent() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		RestTemplate restTemplate = new RestTemplate();
@@ -80,9 +70,9 @@ public class ClientUtilIT {
 		String jsonEvent = "{\"eventId\":\"1a0b7c8b-c0d5-4ab2-8c63-5cf1ad0b439b\",\n" + 
 				"                \"name\":\"IT event\",\n" + 
 				"                \"description\":\"IT description\" , \n" + 
-				"                \"eventStart\":\"2019-12-02T18:00:00\", \n" + 
-				"                \"eventEnd\":\"2019-12-02T22:00:00\", \n" + 
-				"                \"deadlineRVSP\":\"2019-11-02T17:00:00\", \n" + 
+				"                \"eventStart\":\"90000000\", \n" + 
+				"                \"eventEnd\":\"90060000\", \n" + 
+				"                \"deadlineRVSP\":\"64800000\", \n" + 
 				"                \"location\":\"K60\",\n" + 
 				"                \"organizer\":\"AliAfs\"}";
 		

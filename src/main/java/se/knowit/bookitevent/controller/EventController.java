@@ -41,21 +41,16 @@ public class EventController {
     }
     
     @GetMapping({"", "/"})
-    public Set<EventDTO> findAllEvents() {
+    public List<EventDTO> findAllEvents() {
         Set<Event> allEvents = eventService.findAll();
         if (allEvents.isEmpty()) {
             throw notFound();
         }
+        EventMapper mapper = new EventMapper();
+		List<EventDTO> eventDTOs = allEvents.stream().map(mapper::toDTO).collect(Collectors.toList());
 		// apply sorting by EventStart
-		List<Event> events = allEvents.stream().collect(Collectors.toList());
-		Comparator<Event> eventComparator = Comparator.comparing(Event::getEventStart);
-		Collections.sort(events, eventComparator);
-
-		// printouts for testing purpose
-		events.stream().forEach(a -> System.out.println(a.getEventStart()));
-
-		EventMapper mapper = new EventMapper();
-		return events.stream().map(mapper::toDTO).collect(toSet());
+		Comparator<EventDTO> eventComparator = Comparator.comparing(EventDTO::getEventStart);
+		return eventDTOs.stream().sorted(eventComparator).collect(Collectors.toList());
 	}
 
     @GetMapping("/{id}")

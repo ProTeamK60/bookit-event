@@ -26,4 +26,5 @@ workflows:
     jobs:
       - maven/test:
           executor: java_c
+          command: -P circleci
 

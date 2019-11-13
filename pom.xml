@@ -88,7 +88,109 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
+	<profiles>
+		<profile>
+			<id>circleci</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.spotify</groupId>
+						<artifactId>dockerfile-maven-plugin</artifactId>
+						<version>${dockerfile-maven-version}</version>
+						<executions>
+							<execution>
+								<id>default-spotify</id>
+								<goals>
+									<goal>build</goal>
+									<goal>push</goal>
+								</goals>
+								<phase>none</phase>
+							</execution>
+						</executions>
+						<configuration>
+							<repository>${project.artifactId}</repository>
+							<tag>${project.version}</tag>
+							<buildArgs>
+								<JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
+							</buildArgs>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>build-helper-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>add-test-source</id>
+								<phase>none</phase>
+								<goals>
+									<goal>add-test-source</goal>
+								</goals>
+								<configuration>
+									<sources>
+										<source>src/it/java</source>
+									</sources>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-failsafe-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>failsafe-execution</id>
+								<goals>
+									<goal>integration-test</goal>
+									<goal>verify</goal>
+								</goals>
+								<phase>none</phase>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>io.fabric8</groupId>
+						<artifactId>docker-maven-plugin</artifactId>
+						<version>0.20.1</version>
+						<executions>
+							<execution>
+								<id>prepare-it-bookit</id>
+								<phase>none</phase>
+								<goals>
+									<goal>start</goal>
+								</goals>
+								<configuration>
+									<images>
+										<image>
+											<name>bookit-event:0.0.1-SNAPSHOT</name>
+											<alias>bookit</alias>
+											<run>
+												<ports>
+													<port>tomcat.port:8080</port>
+												</ports>
+												<wait>
+													<http>
+														<url>http://localhost:${tomcat.port}/api/v1/events</url>
+													</http>
+													<time>10000</time>
+												</wait>
+											</run>
+										</image>
+									</images>
+								</configuration>
+							</execution>
+							<execution>
+								<id>remove-bookit</id>
+								<phase>none</phase>
+								<goals>
+									<goal>stop</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 	<build>
 		<plugins>
 			<plugin>
@@ -110,7 +212,7 @@
 				<version>${dockerfile-maven-version}</version>
 				<executions>
 					<execution>
-						<id>default</id>
+						<id>default-spotify</id>
 						<goals>
 							<goal>build</goal>
 							<goal>push</goal>
@@ -156,6 +258,7 @@
 				<artifactId>maven-failsafe-plugin</artifactId>
 				<executions>
 					<execution>
+						<id>failsafe-execution</id>
 						<goals>
 							<goal>integration-test</goal>
 							<goal>verify</goal>

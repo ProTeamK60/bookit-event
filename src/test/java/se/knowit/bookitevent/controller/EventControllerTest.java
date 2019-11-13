@@ -42,7 +42,7 @@ class EventControllerTest {
     private static final Event DEFAULT_EVENT = buildDefaultEvent();
     
     private static Event buildDefaultEvent() {
-        Instant startTime = ZonedDateTime.of(2019, 11, 13, 17, 56,0,0, ZoneId.systemDefault()).toInstant();
+        Instant startTime = ZonedDateTime.of(2019, 11, 13, 17, 56, 0, 0, ZoneId.systemDefault()).toInstant();
         Event event = new Event();
         event.setName("DEFAULT_EVENT");
         event.setId(DEFAULT_ID);
@@ -79,7 +79,7 @@ class EventControllerTest {
     @Test
     void getRequestFor_AllEvents_ShouldReturnErrorCode_404_WhenNoEventsExists() throws Exception {
         when(eventService.findAll()).thenReturn(Collections.emptySet());
-    
+        
         mockMvc.perform(get("/api/v1/events/"))
                 .andExpect(status().isNotFound());
     }
@@ -97,10 +97,10 @@ class EventControllerTest {
     @Test
     void getRequestFor_NonExistingEventId_ShouldReturnErrorCode_404() throws Exception {
         when(eventService.findByEventId(any())).thenReturn(Optional.empty());
-    
+        
         mockMvc.perform(get("/api/v1/events/ea4ab6c0-8a73-4e9b-b28a-7bb9e0f87b18"))
                 .andExpect(status().isNotFound());
-    
+        
     }
     
     @Test
@@ -113,7 +113,7 @@ class EventControllerTest {
                 "\"deadlineRVSP\":64800000," +
                 "\"location\":\"K60\"," +
                 "\"organizer\":\"Ola\"}";
-    
+        
         EventDTO eventDTO = getEventDTOFromJson(incomingJson);
         EventMapper eventMapper = new EventMapper();
         Event savedEvent = eventMapper.fromDTO(eventDTO);
@@ -127,16 +127,17 @@ class EventControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(incomingJson)
         )
-        .andExpect(status().isCreated())
-        .andExpect(header().string("location", matchesPattern("/api/v1/events/[-a-z0-9]+")))
-        .andReturn();
-    
+                .andExpect(status().isCreated())
+                .andExpect(header().string("Access-Control-Expose-Headers", "Location"))
+                .andExpect(header().string("location", matchesPattern("/api/v1/events/[-a-z0-9]+")))
+                .andReturn();
+        
         assertReturnedLocationProvidesCorrectJson(savedEvent, savedEventDTO, result);
     }
     
     @Test
     void postRequestWithValidDataAndExistingEventIdShouldReturnLocationOfTheUpdatedEvent() throws Exception {
-        String incomingJson = "{\"eventId\":\""+
+        String incomingJson = "{\"eventId\":\"" +
                 DEFAULT_UUID.toString() +
                 "\"," +
                 "\"name\":\"A test event\"," +
@@ -146,23 +147,24 @@ class EventControllerTest {
                 "\"deadlineRVSP\":64800000," +
                 "\"location\":\"K60\"," +
                 "\"organizer\":\"Ola\"}";
-    
+        
         EventDTO eventDTO = getEventDTOFromJson(incomingJson);
         EventMapper eventMapper = new EventMapper();
         Event savedEvent = eventMapper.fromDTO(eventDTO);
         EventDTO savedEventDTO = eventMapper.toDTO(savedEvent);
-    
+        
         when(eventService.save(eq(eventMapper.fromDTO(eventDTO)))).thenReturn(savedEvent);
-    
+        
         MvcResult result = mockMvc.perform(
                 post("/api/v1/events/")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(incomingJson)
         )
                 .andExpect(status().isAccepted())
+                .andExpect(header().string("Access-Control-Expose-Headers", "Location"))
                 .andExpect(header().string("location", matchesPattern("/api/v1/events/[-a-z0-9]+")))
                 .andReturn();
-    
+        
         assertReturnedLocationProvidesCorrectJson(savedEvent, savedEventDTO, result);
     }
     
@@ -182,7 +184,7 @@ class EventControllerTest {
     @Test
     void postRequestWithInvalidEventDataShouldReturnA_HTTP_400_Response() throws Exception {
         when(eventService.save(any())).thenThrow(IllegalArgumentException.class);
-    
+        
         mockMvc.perform(
                 post("/api/v1/events/")
                         .contentType(MediaType.APPLICATION_JSON)

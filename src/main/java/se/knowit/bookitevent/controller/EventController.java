@@ -78,12 +78,14 @@ public class EventController {
     
     private ResponseEntity<String> generateEventCreatedResponse(CommandResult result) {
         UUID eventId = result.getEventId().orElseThrow(RuntimeException::new);
-        return ResponseEntity.created(getURI(eventId.toString())).build();
+        return ResponseEntity.created(getURI(eventId.toString()))
+                .header("Access-Control-Expose-Headers", "Location").build();
     }
     
     private ResponseEntity<String> generateEventUpdateAcceptedResponse(CommandResult result) {
         UUID eventId = result.getEventId().orElseThrow(RuntimeException::new);
-        return ResponseEntity.accepted().location(getURI(eventId.toString())).build();
+        return ResponseEntity.accepted().location(getURI(eventId.toString()))
+                .header("Access-Control-Expose-Headers", "Location").build();
     }
     
     private ResponseEntity<String> generateResponseForBadCreateOrUpdateEventRequest(CommandResult result) {

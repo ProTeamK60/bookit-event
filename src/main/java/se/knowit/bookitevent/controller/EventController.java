@@ -14,14 +14,12 @@ import se.knowit.bookitevent.service.EventService;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URI;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toSet;
 import static se.knowit.bookitevent.service.CreateOrUpdateCommand.Outcome.CREATED;
 import static se.knowit.bookitevent.service.CreateOrUpdateCommand.Outcome.UPDATED;
 
@@ -41,22 +39,31 @@ public class EventController {
     }
     
     @GetMapping({"", "/"})
-    public List<EventDTO> findAllEvents() {
+    public Set<EventDTO> findAllEvents() {
         Set<Event> allEvents = eventService.findAll();
         if (allEvents.isEmpty()) {
             throw notFound();
         }
         EventMapper mapper = new EventMapper();
-		List<EventDTO> eventDTOs = allEvents.stream().map(mapper::toDTO).collect(Collectors.toList());
-		// apply sorting by EventStart
-		Comparator<EventDTO> eventComparator = Comparator.comparing(EventDTO::getEventStart);
-		return eventDTOs.stream().sorted(eventComparator).collect(Collectors.toList());
+		return allEvents.stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toSet());
 	}
 
     @GetMapping("/{id}")
     public EventDTO findById(@PathVariable String id) {
         Event event = eventService.findByEventId(UUID.fromString(id)).orElseThrow(this::notFound);
         return new EventMapper().toDTO(event);
+    }
+    
+    @GetMapping("/sorted/eventstart")
+    public List<EventDTO> findAllEventsSortedByEventStart() {
+        Set<EventDTO> eventDTOS = findAllEvents();
+        // apply sorting by EventStart
+        Comparator<EventDTO> eventComparator = Comparator.comparing(EventDTO::getEventStart);
+        return eventDTOS.stream()
+                .sorted(eventComparator)
+                .collect(Collectors.toList());
     }
     
     private ResponseStatusException notFound() {

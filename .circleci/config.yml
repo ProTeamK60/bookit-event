@@ -4,6 +4,11 @@ version: 2.1
 orbs:
   # Declare a dependency on the welcome-orb
   welcome: circleci/welcome-orb@0.3.1
+  maven: circleci/maven@0.0.11
+executors:
+  java_14:
+    docker:
+      - image: circleci/openjdk:14-ea-jdk-buster-node-browsers-legacy
 # Orchestrate or schedule a set of jobs
 workflows:
   # Name the workflow "welcome"
@@ -11,3 +16,8 @@ workflows:
     # Run the welcome/run job in its own container
     jobs:
       - welcome/run
+  maven:
+    jobs:
+      - maven/test:
+          executor: java_14
+

@@ -100,20 +100,9 @@
 						<executions>
 							<execution>
 								<id>default-spotify</id>
-								<goals>
-									<goal>build</goal>
-									<goal>push</goal>
-								</goals>
 								<phase>none</phase>
 							</execution>
 						</executions>
-						<configuration>
-							<repository>${project.artifactId}</repository>
-							<tag>${project.version}</tag>
-							<buildArgs>
-								<JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
-							</buildArgs>
-						</configuration>
 					</plugin>
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
@@ -122,14 +111,6 @@
 							<execution>
 								<id>add-test-source</id>
 								<phase>none</phase>
-								<goals>
-									<goal>add-test-source</goal>
-								</goals>
-								<configuration>
-									<sources>
-										<source>src/it/java</source>
-									</sources>
-								</configuration>
 							</execution>
 						</executions>
 					</plugin>
@@ -139,10 +120,6 @@
 						<executions>
 							<execution>
 								<id>failsafe-execution</id>
-								<goals>
-									<goal>integration-test</goal>
-									<goal>verify</goal>
-								</goals>
 								<phase>none</phase>
 							</execution>
 						</executions>
@@ -155,35 +132,10 @@
 							<execution>
 								<id>prepare-it-bookit</id>
 								<phase>none</phase>
-								<goals>
-									<goal>start</goal>
-								</goals>
-								<configuration>
-									<images>
-										<image>
-											<name>bookit-event:0.0.1-SNAPSHOT</name>
-											<alias>bookit</alias>
-											<run>
-												<ports>
-													<port>tomcat.port:8080</port>
-												</ports>
-												<wait>
-													<http>
-														<url>http://localhost:${tomcat.port}/api/v1/events</url>
-													</http>
-													<time>10000</time>
-												</wait>
-											</run>
-										</image>
-									</images>
-								</configuration>
 							</execution>
 							<execution>
 								<id>remove-bookit</id>
 								<phase>none</phase>
-								<goals>
-									<goal>stop</goal>
-								</goals>
 							</execution>
 						</executions>
 					</plugin>
@@ -204,7 +156,6 @@
 						</goals>
 					</execution>
 				</executions>
-
 			</plugin>
 			<plugin>
 				<groupId>com.spotify</groupId>
@@ -308,5 +259,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>

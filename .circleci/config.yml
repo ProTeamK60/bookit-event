@@ -22,5 +22,5 @@ workflows:
   maven:
     jobs:
       - maven/test:
-          executor: java_13
+          executor: java_14
 

@@ -11,7 +11,7 @@ executors:
       - image: circleci/openjdk:14-ea-jdk-buster-node-browsers-legacy
   java_13:
     docker:
-      - image: openjdk:13
+      - image: circleci/openjdk:13.0.1-jdk-buster-node-browsers-legacy
   java_c:
     docker:
       - image: circleci/openjdk
@@ -25,6 +25,6 @@ workflows:
   maven:
     jobs:
       - maven/test:
-          executor: java_c
-          command: -P circleci test
+          executor: java_13
+          command: -P circleci verify
 

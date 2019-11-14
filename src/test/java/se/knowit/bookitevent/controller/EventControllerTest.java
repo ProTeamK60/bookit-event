@@ -200,12 +200,11 @@ class EventControllerTest {
         nextEvent.setDeadlineRVSP(nextEvent.getEventStart().minus(2, DAYS));
         when(eventService.findAll()).thenReturn(Set.of(DEFAULT_EVENT, nextEvent));
         
-        MvcResult mvcResult = mockMvc.perform(get("/api/v1/events/sorted/eventstart"))
+        String jsonData = mockMvc.perform(get("/api/v1/events/sorted/eventstart"))
                 .andExpect(status().isOk())
-                .andReturn();
-        String contentAsString = mvcResult.getResponse().getContentAsString();
+                .andReturn().getResponse().getContentAsString();
         ObjectMapper mapper = new ObjectMapper();
-        List<EventDTO> eventDTOS = mapper.readValue(contentAsString, new TypeReference<List<EventDTO>>() {
+        List<EventDTO> eventDTOS = mapper.readValue(jsonData, new TypeReference<List<EventDTO>>() {
         });
         assertTrue(eventDTOS.get(0).getEventStart() < eventDTOS.get(1).getEventStart());
     }

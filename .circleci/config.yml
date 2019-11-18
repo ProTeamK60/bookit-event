@@ -1,21 +1,44 @@
-# Use the latest 2.1 version of CircleCI pipeline process engine. See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
-# Use a package of configuration called an orb.
-orbs:
-  maven: circleci/maven@0.0.11
-executors:
-  java_13:
-    docker:
-      - image: circleci/openjdk:13.0.1-jdk-buster-node-browsers-legacy
-# Orchestrate or schedule a set of jobs
+
 workflows:
-  maven:
+  version: 2
+  build-deploy:
     jobs:
-      - maven/test:
-          executor: java_13
-          command: -P circleci verify --settings '.mvn/wrapper/settings.xml'
+      - unit-test
+      - publish-docker:
+          requires:
+            - unit-test
 
 jobs:
+  unit-test:
+    docker:
+      - image: circleci/openjdk:13.0.1-jdk-buster-node-browsers-legacy
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - hello-spring-mvn-V2-{{ checksum "pom.xml" }}
+            - hello-spring-mvn-V2
+      - run: mvn dependency:go-offline
+      - run:
+          name: Build and unit test
+          command: |
+            mvn test -B \
+              -Dbuild.number=${CIRCLE_BUILD_NUM} \
+              -Dcommit.hash=${CIRCLE_SHA1} \
+              -Dcircle.workflow.guid=${CIRCLE_WORKFLOW_ID} \
+              -Dbuild.user=${CIRCLE_PROJECT_USERNAME} \
+              -Dbuild.repo=${CIRCLE_PROJECT_REPONAME} 
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: hello-spring-mvn-V2-{{ checksum "pom.xml" }}
+      - store_test_results:
+          path: target/surefire-reports
+
+
+
   publish-docker:
     docker:
       - image: circleci/openjdk:13.0.1-jdk-buster-node-browsers-legacy
@@ -38,5 +61,3 @@ jobs:
               -Dcircle.workflow.guid=${CIRCLE_WORKFLOW_ID} \
               -Dbuild.user=${CIRCLE_PROJECT_USERNAME} \
               -Dbuild.repo=${CIRCLE_PROJECT_REPONAME}
-
-

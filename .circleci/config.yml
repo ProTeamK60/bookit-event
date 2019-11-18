@@ -13,5 +13,15 @@ workflows:
     jobs:
       - maven/test:
           executor: java_13
-          command: -P circleci verify -Dmaven_security_master={rrNPVgq2hjgHiVuBjLfeCu2kdWSjh1/Ti19jBmWeFIBkeVLYgFbwQlunFAqpTctH6DqBdt7bKYeJpFsGpTuYV1DrFNo5APQvNHCjLLBTxVs=} --settings '.mvn/wrapper/settings.xml'
+          command: -P circleci verify --settings '.mvn/wrapper/settings.xml'
+    steps:
+      -run: cp .mvn/wrapper/settings.xml ~/.m2/settings.xml
+      -run: echo "<settingsSecurity><master>${maven_security_master}</master></settingsSecurity>" > ~/.m2/settings-security.xml
+      -run: ./mvnw compile jib:build -B -DskipTests=true \
+        -Dbuild.number=${CIRCLE_BUILD_NUM} \
+        -Dcommit.hash=${CIRCLE_SHA1} \
+        -Dcircle.workflow.guid=${CIRCLE_WORKFLOW_ID} \
+        -Dbuild.user=${CIRCLE_PROJECT_USERNAME} \
+        -Dbuild.repo=${CIRCLE_PROJECT_REPONAME}
+
 

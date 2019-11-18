@@ -18,6 +18,6 @@ workflows:
 jobs:
     my-job:
       executor: java_13
-      command: sh ./build_docker.sh
+      shell: sh ./build_docker.sh
 
 

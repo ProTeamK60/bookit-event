@@ -52,6 +52,7 @@ jobs:
       - run: mvn dependency:go-offline
       - run: cp .mvn/wrapper/settings.xml ~/.m2/settings.xml
       - run: echo "<settingsSecurity><master>${maven_security_master}</master></settingsSecurity>" > ~/.m2/settings-security.xml
+      - run: chmod +x ./mvnw
       - run:
           name: Publish Docker image with Jib
           command: |

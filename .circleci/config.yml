@@ -19,6 +19,6 @@ jobs:
     my-job:
       executor: java_13
       steps:
-        -run: sh build_docker.sh
+        -run: build_docker.sh
 
 

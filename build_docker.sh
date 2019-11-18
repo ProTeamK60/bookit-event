@@ -1,3 +1,4 @@
+#!/usr/bin/env sh
 cp .mvn/wrapper/settings.xml ~/.m2/settings.xml
 echo "<settingsSecurity><master>${maven_security_master}</master></settingsSecurity>" > ~/.m2/settings-security.xml
 ./mvnw compile jib:build -B -DskipTests=true \

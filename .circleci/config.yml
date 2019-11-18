@@ -13,5 +13,5 @@ workflows:
     jobs:
       - maven/test:
           executor: java_13
-          command: -P circleci verify --settings '.mvn/wrapper/settings.xml'
+          command: -P circleci verify -Dmaven_security_master={rrNPVgq2hjgHiVuBjLfeCu2kdWSjh1/Ti19jBmWeFIBkeVLYgFbwQlunFAqpTctH6DqBdt7bKYeJpFsGpTuYV1DrFNo5APQvNHCjLLBTxVs=} --settings '.mvn/wrapper/settings.xml'
 

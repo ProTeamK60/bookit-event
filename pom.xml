@@ -20,6 +20,11 @@
 		<dockerfile-maven-version>1.4.13</dockerfile-maven-version>
 		<spring-cloud-sleuth.version>2.1.0.RELEASE</spring-cloud-sleuth.version>
 		<tomcat.port>8080</tomcat.port>
+		<build.number>000</build.number>
+		<commit.hash>local-build</commit.hash>
+		<build.user>local-build</build.user>
+		<build.repo>local-build</build.repo>
+		<circle.workflow.guid>local-build</circle.workflow.guid>
 	</properties>
 
 	<dependencies>
@@ -93,6 +98,7 @@
 			<id>circleci</id>
 			<build>
 				<plugins>
+					<!--
 					<plugin>
                         <groupId>com.spotify</groupId>
                         <artifactId>dockerfile-maven-plugin</artifactId>
@@ -104,6 +110,7 @@
                             </execution>
                         </executions>
                     </plugin>
+                    -->
                     <plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>build-helper-maven-plugin</artifactId>
@@ -157,6 +164,41 @@
 					</execution>
 				</executions>
 			</plugin>
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>1.7.0</version>
+                <configuration>
+					<from>
+						<image>registry://docker.io/proteamk60/aml-eventjdk:0.0.1-SNAPSHOT</image>
+					</from>
+                    <to>
+                        <image>docker.io/proteamk60/${project.artifactId}:${project.version}-b${build.number}</image>
+                    </to>
+					<container>
+						<jvmFlags>
+							<jvmFlag>-Dbuild.number=${build.number}</jvmFlag>
+							<jvmFlag>-Dcommit.hash=${commit.hash}</jvmFlag>
+							<jvmFlag>-Dbuild.user=${build.user}</jvmFlag>
+							<jvmFlag>-Dbuild.repo=${build.repo}</jvmFlag>
+							<jvmFlag>-Dcircle.workflow.guid=${circle.workflow.guid}</jvmFlag>
+						</jvmFlags>
+						<ports>
+							<port>${tomcat.port}</port>
+						</ports>
+						<workingDirectory>/app</workingDirectory>
+					</container>
+                </configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>build</goal>
+						</goals>
+					</execution>
+				</executions>
+            </plugin>
+			<!--
 			<plugin>
 				<groupId>com.spotify</groupId>
 				<artifactId>dockerfile-maven-plugin</artifactId>
@@ -178,6 +220,7 @@
 					</buildArgs>
 				</configuration>
 			</plugin>
+			-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>

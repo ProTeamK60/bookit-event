@@ -4,10 +4,10 @@ workflows:
   version: 2
   build-deploy:
     jobs:
-      - publish-docker
+      - build-test-publish-docker
 
 jobs:
-  publish-docker:
+  build-test-publish-docker:
     docker:
       - image: circleci/openjdk:13.0.1-jdk-buster-node-browsers-legacy
     working_directory: ~/repo
@@ -18,10 +18,12 @@ jobs:
             - bookit-event-{{ checksum "pom.xml" }}
             - bookit-event
       - run: mvn dependency:go-offline
+      # Ensure it is possible to publish to ProTeamK60's repo on Docker hub
       - run: cp .mvn/wrapper/settings.xml ~/.m2/settings.xml
       - run: echo "<settingsSecurity><master>${maven_security_master}</master></settingsSecurity>" > ~/.m2/settings-security.xml
       - run: chmod +x ./mvnw
       - run:
+          # Using Google Jib to build Docker image and publish it to Docker registry
           name: Build, unit test and install
           command: |
             ./mvnw install -B -P circleci \

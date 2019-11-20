@@ -1,13 +1,41 @@
-# Use the latest 2.1 version of CircleCI pipeline process engine. See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
-# Use a package of configuration called an orb.
-orbs:
-  # Declare a dependency on the welcome-orb
-  welcome: circleci/welcome-orb@0.3.1
-# Orchestrate or schedule a set of jobs
+
 workflows:
-  # Name the workflow "welcome"
-  welcome:
-    # Run the welcome/run job in its own container
+  version: 2
+  build-deploy:
     jobs:
-      - welcome/run
+      - build-test-publish-docker
+
+jobs:
+  build-test-publish-docker:
+    docker:
+      - image: circleci/openjdk:13.0.1-jdk-buster-node-browsers-legacy
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - bookit-event-{{ checksum "pom.xml" }}
+            - bookit-event
+      - run: mvn dependency:go-offline
+      # Ensure it is possible to publish to ProTeamK60's repo on Docker hub
+      - run: cp .mvn/wrapper/settings.xml ~/.m2/settings.xml
+      - run: echo "<settingsSecurity><master>${maven_security_master}</master></settingsSecurity>" > ~/.m2/settings-security.xml
+      - run: chmod +x ./mvnw
+      - run:
+          # Using Google Jib to build Docker image and publish it to Docker registry
+          name: Build, unit test and install
+          command: |
+            ./mvnw install -B -P circleci \
+              -Dbuild.number=${CIRCLE_BUILD_NUM} \
+              -Dcommit.hash=${CIRCLE_SHA1} \
+              -Dcircle.workflow.guid=${CIRCLE_WORKFLOW_ID} \
+              -Dbuild.user=${CIRCLE_PROJECT_USERNAME} \
+              -Dbuild.repo=${CIRCLE_PROJECT_REPONAME} 
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: bookit-event-{{ checksum "pom.xml" }}
+      - store_test_results:
+          path: target/surefire-reports
+

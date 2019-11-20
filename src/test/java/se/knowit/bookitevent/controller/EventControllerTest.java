@@ -1,5 +1,6 @@
 package se.knowit.bookitevent.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,15 +20,13 @@ import se.knowit.bookitevent.service.EventService;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.time.temporal.ChronoUnit.HOURS;
 import static org.hamcrest.text.MatchesPattern.matchesPattern;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -190,5 +189,23 @@ class EventControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"fake\":\"true\"}")
         ).andExpect(status().isBadRequest());
+    }
+    
+    @Test
+    void getRequestFor_AllEvents_SortedByStartDate_ShouldReturnEventsInCorrectOrder() throws Exception {
+        Event nextEvent = buildDefaultEvent();
+        nextEvent.setEventId(UUID.randomUUID());
+        nextEvent.setEventStart(DEFAULT_EVENT.getEventEnd().plus(1, DAYS));
+        nextEvent.setEventEnd(nextEvent.getEventStart().plus(1, DAYS));
+        nextEvent.setDeadlineRVSP(nextEvent.getEventStart().minus(2, DAYS));
+        when(eventService.findAll()).thenReturn(Set.of(DEFAULT_EVENT, nextEvent));
+        
+        String jsonData = mockMvc.perform(get("/api/v1/events/sorted/eventstart"))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        ObjectMapper mapper = new ObjectMapper();
+        List<EventDTO> eventDTOS = mapper.readValue(jsonData, new TypeReference<List<EventDTO>>() {
+        });
+        assertTrue(eventDTOS.get(0).getEventStart() < eventDTOS.get(1).getEventStart());
     }
 }

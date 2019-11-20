@@ -14,10 +14,12 @@ import se.knowit.bookitevent.service.EventService;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URI;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toSet;
 import static se.knowit.bookitevent.service.CreateOrUpdateCommand.Outcome.CREATED;
 import static se.knowit.bookitevent.service.CreateOrUpdateCommand.Outcome.UPDATED;
 
@@ -43,15 +45,25 @@ public class EventController {
             throw notFound();
         }
         EventMapper mapper = new EventMapper();
-        return allEvents.stream()
-				.map(mapper::toDTO)
-				.collect(toSet());
-    }
-    
+		return allEvents.stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toSet());
+	}
+
     @GetMapping("/{id}")
     public EventDTO findById(@PathVariable String id) {
         Event event = eventService.findByEventId(UUID.fromString(id)).orElseThrow(this::notFound);
         return new EventMapper().toDTO(event);
+    }
+    
+    @GetMapping("/sorted/eventstart")
+    public List<EventDTO> findAllEventsSortedByEventStart() {
+        Set<EventDTO> eventDTOS = findAllEvents();
+        // apply sorting by EventStart
+        Comparator<EventDTO> eventComparator = Comparator.comparing(EventDTO::getEventStart);
+        return eventDTOS.stream()
+                .sorted(eventComparator)
+                .collect(Collectors.toList());
     }
     
     private ResponseStatusException notFound() {

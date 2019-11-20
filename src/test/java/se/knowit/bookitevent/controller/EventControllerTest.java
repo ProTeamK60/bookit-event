@@ -17,6 +17,7 @@ import se.knowit.bookitevent.dto.EventMapper;
 import se.knowit.bookitevent.model.Event;
 import se.knowit.bookitevent.service.EventService;
 
+import java.io.UnsupportedEncodingException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -25,8 +26,7 @@ import java.util.*;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.time.temporal.ChronoUnit.HOURS;
 import static org.hamcrest.text.MatchesPattern.matchesPattern;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -72,7 +72,45 @@ class EventControllerTest {
     void getRequestFor_AllEvents_ShouldReturnAllEvents() throws Exception {
         when(eventService.findAll()).thenReturn(Set.of(DEFAULT_EVENT));
         
-        mockMvc.perform(get("/api/v1/events/")).andExpect(status().isOk());
+        String json = mockMvc.perform(get("/api/v1/events/"))
+                .andExpect(status().isOk())
+                .andExpect(this::assertResponseContentIsNotEmpty)
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse().getContentAsString();
+        assertJSONContainsTheDefaultEvent(json);
+    }
+    
+    private void assertJSONContainsTheDefaultEvent(String json) throws com.fasterxml.jackson.core.JsonProcessingException {
+        EventMapper eventMapper = new EventMapper();
+        EventDTO eventDTO = eventMapper.toDTO(DEFAULT_EVENT);
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<EventDTO> returned = objectMapper.readValue(json, new TypeReference<>() {
+        });
+        assertEquals(1, returned.size());
+        assertTrue(returned.contains(eventDTO));
+    }
+    
+    private void assertResponseContentIsNotEmpty(MvcResult result) {
+        try {
+            String contentAsString = result.getResponse().getContentAsString();
+            assertNotNull(contentAsString, "content was null");
+            assertFalse(contentAsString.isEmpty(), "content was empty");
+            assertFalse(contentAsString.isBlank(), "content was blank");
+        } catch (UnsupportedEncodingException unsupportedEncodingException) {
+            throw new RuntimeException(unsupportedEncodingException);
+        }
+    }
+    
+    @Test
+    void postRequestWithInvalidEventDataShouldReturnA_HTTP_400_Response() throws Exception {
+        when(eventService.save(any())).thenThrow(IllegalArgumentException.class);
+        
+        mockMvc.perform(
+                post("/api/v1/events/")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"fake\":\"true\"}")
+        ).andExpect(status().isBadRequest())
+                .andExpect(this::assertResponseContentIsNotEmpty);
     }
     
     @Test
@@ -169,6 +207,7 @@ class EventControllerTest {
     
     private void assertReturnedLocationProvidesCorrectJson(Event savedEvent, EventDTO savedEventDTO, MvcResult result) throws Exception {
         String location = result.getResponse().getHeader("location");
+        assertNotNull(location);
         when(eventService.findByEventId(eq(DEFAULT_UUID))).thenReturn(Optional.of(savedEvent));
         MvcResult getResult = mockMvc.perform(get(location).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
@@ -180,16 +219,6 @@ class EventControllerTest {
         return jsonMapper.readValue(incomingJson, EventDTO.class);
     }
     
-    @Test
-    void postRequestWithInvalidEventDataShouldReturnA_HTTP_400_Response() throws Exception {
-        when(eventService.save(any())).thenThrow(IllegalArgumentException.class);
-        
-        mockMvc.perform(
-                post("/api/v1/events/")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"fake\":\"true\"}")
-        ).andExpect(status().isBadRequest());
-    }
     
     @Test
     void getRequestFor_AllEvents_SortedByStartDate_ShouldReturnEventsInCorrectOrder() throws Exception {
@@ -204,7 +233,7 @@ class EventControllerTest {
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
         ObjectMapper mapper = new ObjectMapper();
-        List<EventDTO> eventDTOS = mapper.readValue(jsonData, new TypeReference<List<EventDTO>>() {
+        List<EventDTO> eventDTOS = mapper.readValue(jsonData, new TypeReference<>() {
         });
         assertTrue(eventDTOS.get(0).getEventStart() < eventDTOS.get(1).getEventStart());
     }

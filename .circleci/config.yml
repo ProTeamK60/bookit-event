@@ -8,9 +8,9 @@ workflows:
       - publish-docker:
           requires:
             - build-test
-        filters:
-          branches:
-            only: development
+          filters:
+            branches:
+              only: development
 
 jobs:
   build-test:

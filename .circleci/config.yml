@@ -6,7 +6,8 @@ workflows:
     jobs:
       - build-test
       - publish-docker
-        requires: build-test
+        requires:
+          - build-test
         filters:
           branches:
             only: development

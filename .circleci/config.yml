@@ -53,17 +53,17 @@ jobs:
           keys:
             - bookit-event-{{ checksum "pom.xml" }}
             - bookit-event
-      -attach-workspace:
+      -attach_workspace:
         at: ~/repo
-          - run: mvn dependency:go-offline
+              - run: mvn dependency:go-offline
           # Ensure it is possible to publish to ProTeamK60's repo on Docker hub
-          - run: cp .mvn/wrapper/settings.xml ~/.m2/settings.xml
-          - run: echo "<settingsSecurity><master>${maven_security_master}</master></settingsSecurity>" > ~/.m2/settings-security.xml
-          - run: chmod +x ./mvnw
-          - run:
-              # Using Google Jib to build Docker image and publish it to Docker registry
-              name: Build and test
-              command: |
+              - run: cp .mvn/wrapper/settings.xml ~/.m2/settings.xml
+              - run: echo "<settingsSecurity><master>${maven_security_master}</master></settingsSecurity>" > ~/.m2/settings-security.xml
+              - run: chmod +x ./mvnw
+              - run:
+                  # Using Google Jib to build Docker image and publish it to Docker registry
+                  name: Build and test
+                  command: |
                 ./mvnw jib:build -B -P circleci \
                   -Dbuild.number=${CIRCLE_BUILD_NUM} \
                   -Dcommit.hash=${CIRCLE_SHA1} \

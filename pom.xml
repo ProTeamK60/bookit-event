@@ -124,15 +124,6 @@
                                 <workingDirectory>/app</workingDirectory>
                             </container>
                         </configuration>
-                        <executions>
-                            <execution>
-                                <id>default-jib</id>
-                                <phase>install</phase>
-                                <goals>
-                                    <goal>build</goal>
-                                </goals>
-                            </execution>
-                        </executions>
                     </plugin>
                     <plugin>
                         <groupId>com.spotify</groupId>

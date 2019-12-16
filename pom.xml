@@ -105,12 +105,12 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-servicediscovery</artifactId>
-            <version>LATEST</version>
+            <version>1.11.693</version>
         </dependency>
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-core</artifactId>
-            <version>LATEST</version>
+            <version>1.11.693</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.kafka</groupId>

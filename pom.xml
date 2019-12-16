@@ -121,6 +121,9 @@
     <profiles>
         <profile>
             <id>circleci</id>
+            <properties>
+                <activatedProperties>prod</activatedProperties>
+            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -142,7 +145,6 @@
                                     <jvmFlag>-Dbuild.user=${build.user}</jvmFlag>
                                     <jvmFlag>-Dbuild.repo=${build.repo}</jvmFlag>
                                     <jvmFlag>-Dcircle.workflow.guid=${circle.workflow.guid}</jvmFlag>
-                                    <jvmFlag>-Dspring.profiles.active=prod</jvmFlag>
                                 </jvmFlags>
                                 <ports>
                                     <port>${tomcat.port}</port>

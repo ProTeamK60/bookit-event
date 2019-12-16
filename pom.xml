@@ -29,6 +29,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-sleuth</artifactId>
             <version>${spring-cloud-sleuth.version}</version>
@@ -97,6 +102,21 @@
             <version>4.8.2</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-servicediscovery</artifactId>
+            <version>LATEST</version>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-core</artifactId>
+            <version>LATEST</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+            <version>2.2.7.RELEASE</version>
+        </dependency>
     </dependencies>
     <profiles>
         <profile>
@@ -122,6 +142,7 @@
                                     <jvmFlag>-Dbuild.user=${build.user}</jvmFlag>
                                     <jvmFlag>-Dbuild.repo=${build.repo}</jvmFlag>
                                     <jvmFlag>-Dcircle.workflow.guid=${circle.workflow.guid}</jvmFlag>
+                                    <jvmFlag>-Dspring.profiles.active=prod</jvmFlag>
                                 </jvmFlags>
                                 <ports>
                                     <port>${tomcat.port}</port>
@@ -178,6 +199,15 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+        <profile>
+            <id>dev</id>
+            <properties>
+                    <activatedProperties>dev</activatedProperties>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
         </profile>
     </profiles>
     <build>
@@ -329,4 +359,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>

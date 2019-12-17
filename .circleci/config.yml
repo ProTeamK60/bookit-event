@@ -29,7 +29,7 @@ jobs:
           # Plain maven build and test
           name: Build and test
           command: |
-            ./mvnw verify -B -P dev
+            ./mvnw verify -B -P test
       - save_cache:
           paths:
             - ~/.m2

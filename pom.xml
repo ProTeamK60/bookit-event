@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.2.0.RELEASE</version>
+        <version>2.2.2.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>se.knowit</groupId>
@@ -18,7 +18,7 @@
     <properties>
         <java.version>13</java.version>
         <dockerfile-maven-version>1.4.13</dockerfile-maven-version>
-        <spring-cloud-sleuth.version>2.1.0.RELEASE</spring-cloud-sleuth.version>
+        <spring-cloud-sleuth.version>2.2.0.RELEASE</spring-cloud-sleuth.version>
         <tomcat.port>8080</tomcat.port>
         <build.number>000</build.number>
         <commit.hash>local-build</commit.hash>
@@ -48,6 +48,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
         </dependency>
         <dependency>
             <groupId>org.liquibase</groupId>
@@ -311,7 +315,7 @@
                                             <http>
                                                 <url>http://localhost:${tomcat.port}/api/v1/events</url>
                                             </http>
-                                            <time>10000</time>
+                                            <time>70000</time> <!-- Long timeout is needed on some VMs -->
                                         </wait>
                                     </run>
                                 </image>

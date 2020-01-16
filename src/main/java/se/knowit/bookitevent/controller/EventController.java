@@ -76,7 +76,6 @@ public class EventController {
     @PostMapping(value = {"", "/"}, consumes = "application/json", produces = "application/json")
     public ResponseEntity<String> createOrUpdateEvent(@RequestBody EventDTO dto) {
         var result = createOrUpdate(dto);
-        kafkaService.sendMessage("events", dto);
 
         if (result.getOutcome() == CREATED) {
             return generateEventCreatedResponse(result);
@@ -88,7 +87,7 @@ public class EventController {
     }
     
     private CommandResult createOrUpdate(@RequestBody EventDTO dto) {
-        var command = new CreateOrUpdateCommand(eventService);
+        var command = new CreateOrUpdateCommand(eventService, kafkaService);
         return command.apply(dto);
     }
     

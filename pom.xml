@@ -315,7 +315,7 @@
                                             <http>
                                                 <url>http://localhost:${tomcat.port}/api/v1/events</url>
                                             </http>
-                                            <time>70000</time> <!-- Long timeout is needed on some VMs -->
+                                            <time>140000</time> <!-- Long timeout is needed on some VMs -->
                                         </wait>
                                     </run>
                                 </image>

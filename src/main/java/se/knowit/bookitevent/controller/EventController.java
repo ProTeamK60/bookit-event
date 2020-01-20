@@ -10,6 +10,7 @@ import se.knowit.bookitevent.model.Event;
 import se.knowit.bookitevent.service.CreateOrUpdateCommand;
 import se.knowit.bookitevent.service.CreateOrUpdateCommand.CommandResult;
 import se.knowit.bookitevent.service.EventService;
+import se.knowit.bookitevent.service.KafkaService;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -33,9 +34,11 @@ public class EventController {
     private static final URI BASE_URI = URI.create(BASE_PATH + "/");
     
     private final EventService eventService;
+    private final KafkaService kafkaService;
     
-    public EventController(EventService eventService) {
+    public EventController(final EventService eventService, final KafkaService kafkaService) {
         this.eventService = eventService;
+        this.kafkaService = kafkaService;
     }
     
     @GetMapping({"", "/"})
@@ -73,7 +76,7 @@ public class EventController {
     @PostMapping(value = {"", "/"}, consumes = "application/json", produces = "application/json")
     public ResponseEntity<String> createOrUpdateEvent(@RequestBody EventDTO dto) {
         var result = createOrUpdate(dto);
-        
+
         if (result.getOutcome() == CREATED) {
             return generateEventCreatedResponse(result);
         } else if (result.getOutcome() == UPDATED) {
@@ -84,7 +87,7 @@ public class EventController {
     }
     
     private CommandResult createOrUpdate(@RequestBody EventDTO dto) {
-        var command = new CreateOrUpdateCommand(eventService);
+        var command = new CreateOrUpdateCommand(eventService, kafkaService);
         return command.apply(dto);
     }
     

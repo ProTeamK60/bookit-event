@@ -1,22 +1,17 @@
 package se.knowit.bookitevent;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.*;
+import org.springframework.web.client.RestTemplate;
+import se.knowit.bookitevent.dto.EventDTO;
 
 import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
-
-import se.knowit.bookitevent.dto.EventDTO;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ClientUtilIT {
  
@@ -24,6 +19,7 @@ public class ClientUtilIT {
 	
 	@Test
 	public void testGetEventById() {
+		System.out.println("ClientUtilIT.testGetEventById");
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		RestTemplate restTemplate = new RestTemplate();
@@ -39,13 +35,14 @@ public class ClientUtilIT {
 
 	@Test
 	public void testGetAllEvents() {
+		System.out.println("ClientUtilIT.testGetAllEvents");
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		RestTemplate restTemplate = new RestTemplate();
 		String url = "http://" + hostname + ":" + port + "/api/v1/events";
 
 		EventDTO[] allEvents = restTemplate.getForObject(url, EventDTO[].class);
-		assertEquals(allEvents.length, 2);
+		assertEquals(2, allEvents.length);
 		
 		assertTrue(Arrays.stream(allEvents).map(EventDTO::getEventId).anyMatch(id -> id.equals("72ab7c8b-c0d5-4ab2-8c63-5cf1ad0b439b")));
 
@@ -62,6 +59,7 @@ public class ClientUtilIT {
 
 	@Test
 	public void testCreateNewEvent() {
+		System.out.println("ClientUtilIT.testCreateNewEvent");
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		RestTemplate restTemplate = new RestTemplate();

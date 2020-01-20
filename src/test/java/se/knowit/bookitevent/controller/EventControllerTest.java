@@ -16,6 +16,7 @@ import se.knowit.bookitevent.dto.EventDTO;
 import se.knowit.bookitevent.dto.EventMapper;
 import se.knowit.bookitevent.model.Event;
 import se.knowit.bookitevent.service.EventService;
+import se.knowit.bookitevent.service.KafkaService;
 
 import java.io.UnsupportedEncodingException;
 import java.time.Instant;
@@ -57,6 +58,9 @@ class EventControllerTest {
     
     @Mock
     private EventService eventService;
+
+    @Mock
+    private KafkaService kafkaService;
     
     @InjectMocks
     private EventController eventController;
@@ -104,7 +108,7 @@ class EventControllerTest {
     @Test
     void postRequestWithInvalidEventDataShouldReturnA_HTTP_400_Response() throws Exception {
         when(eventService.save(any())).thenThrow(IllegalArgumentException.class);
-        
+
         mockMvc.perform(
                 post("/api/v1/events/")
                         .contentType(MediaType.APPLICATION_JSON)

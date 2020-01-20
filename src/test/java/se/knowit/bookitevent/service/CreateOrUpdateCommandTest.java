@@ -22,7 +22,10 @@ class CreateOrUpdateCommandTest {
     private static final String EVENT_ID = "ea4ab6c0-8a73-4e9b-b28a-7bb9e0f87b18";
     @Mock
     private EventService service;
-    
+
+    @Mock
+    private KafkaService kafkaService;
+
     @InjectMocks
     private CreateOrUpdateCommand command;
     

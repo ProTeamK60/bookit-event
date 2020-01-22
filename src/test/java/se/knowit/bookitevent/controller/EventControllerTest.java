@@ -16,6 +16,7 @@ import se.knowit.bookitevent.dto.EventDTO;
 import se.knowit.bookitevent.dto.EventMapper;
 import se.knowit.bookitevent.model.Event;
 import se.knowit.bookitevent.service.EventService;
+import se.knowit.bookitevent.kafka.producer.KafkaProducerService;
 
 import java.io.UnsupportedEncodingException;
 import java.time.Instant;
@@ -57,7 +58,10 @@ class EventControllerTest {
     
     @Mock
     private EventService eventService;
-    
+
+    @Mock
+    private KafkaProducerService kafkaService;
+
     @InjectMocks
     private EventController eventController;
     

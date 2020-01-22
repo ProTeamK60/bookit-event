@@ -1,5 +1,5 @@
 package se.knowit.bookitevent.servicediscovery;
 
 public interface DiscoveryService {
-    String discoverInstance(String serviceName);
+    DiscoveryServiceResult discoverInstances(String namespaceName, String serviceName);
 }

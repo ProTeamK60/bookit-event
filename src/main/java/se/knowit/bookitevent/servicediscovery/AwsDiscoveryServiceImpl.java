@@ -9,27 +9,32 @@ import org.springframework.beans.factory.annotation.Value;
 
 public class AwsDiscoveryServiceImpl implements DiscoveryService {
 
-    private final AWSServiceDiscovery service;
+    private final AWSServiceDiscovery serviceDiscoverClient;
 
-    @Value("${discover.healthstatus.filter}")
-    private String healthStatus;
-
-    public AwsDiscoveryServiceImpl() {
-        service = AWSServiceDiscoveryClientBuilder.defaultClient();
+    public AwsDiscoveryServiceImpl(AWSServiceDiscovery serviceDiscoveryClient) {
+        this.serviceDiscoverClient = serviceDiscoveryClient;
     }
 
     @Override
-    public String discoverInstance(String serviceName) {
-        DiscoverInstancesResult result =
-                service.discoverInstances(
+    public DiscoveryServiceResult discoverInstances(String namespaceName, String serviceName) {
+        DiscoveryServiceResult result = new DiscoveryServiceResult();
+        DiscoverInstancesResult discoverInstancesResult =
+                serviceDiscoverClient.discoverInstances(
                         new DiscoverInstancesRequest()
-                                .withServiceName(serviceName)
-                                .withHealthStatus(healthStatus));
-        String address = null;
-        if(!result.getInstances().isEmpty()) {
-            HttpInstanceSummary instanceSummary = result.getInstances().get(0);
-            address = instanceSummary.getAttributes().get("AWS_INSTANCE_IPV4");
+                                .withNamespaceName(namespaceName)
+                                .withServiceName(serviceName));
+
+        if (!discoverInstancesResult.getInstances().isEmpty()) {
+            discoverInstancesResult.getInstances().forEach(instanceSummary -> {
+                Instance instance = new Instance();
+                instance.setInstanceIpv4(instanceSummary.getAttributes().get("AWS_INSTANCE_IPV4"));
+                instance.setInstancePort(instanceSummary.getAttributes().get("AWS_INSTANCE_PORT"));
+                instance.setRegion(instanceSummary.getAttributes().get("REGION"));
+                result.addInstance(instance);
+            });
         }
-        return address;
+
+        return result;
     }
 }
+

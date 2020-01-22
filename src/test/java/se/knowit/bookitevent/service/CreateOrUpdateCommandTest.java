@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.knowit.bookitevent.dto.EventDTO;
 import se.knowit.bookitevent.dto.EventMapper;
+import se.knowit.bookitevent.kafka.producer.KafkaProducerService;
 import se.knowit.bookitevent.model.Event;
 
 import java.time.Instant;
@@ -22,6 +23,9 @@ class CreateOrUpdateCommandTest {
     private static final String EVENT_ID = "ea4ab6c0-8a73-4e9b-b28a-7bb9e0f87b18";
     @Mock
     private EventService service;
+
+    @Mock
+    private KafkaProducerService kafkaService;
     
     @InjectMocks
     private CreateOrUpdateCommand command;

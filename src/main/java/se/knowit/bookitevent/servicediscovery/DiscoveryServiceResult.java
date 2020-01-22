@@ -20,6 +20,6 @@ public class DiscoveryServiceResult {
     }
 
     public String getAddresses() {
-        return instances.stream().map(instance -> instance.getAddress()).collect(Collectors.joining(","));
+        return instances.stream().map(Instance::getAddress).collect(Collectors.joining(","));
     }
 }

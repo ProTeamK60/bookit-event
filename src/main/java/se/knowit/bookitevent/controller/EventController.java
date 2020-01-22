@@ -6,11 +6,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import se.knowit.bookitevent.dto.EventDTO;
 import se.knowit.bookitevent.dto.EventMapper;
+import se.knowit.bookitevent.kafka.producer.KafkaProducerService;
 import se.knowit.bookitevent.model.Event;
 import se.knowit.bookitevent.service.CreateOrUpdateCommand;
 import se.knowit.bookitevent.service.CreateOrUpdateCommand.CommandResult;
 import se.knowit.bookitevent.service.EventService;
-import se.knowit.bookitevent.service.KafkaService;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -34,9 +34,9 @@ public class EventController {
     private static final URI BASE_URI = URI.create(BASE_PATH + "/");
     
     private final EventService eventService;
-    private final KafkaService kafkaService;
+    private final KafkaProducerService<EventDTO> kafkaService;
     
-    public EventController(final EventService eventService, final KafkaService kafkaService) {
+    public EventController(final EventService eventService, final KafkaProducerService<EventDTO> kafkaService) {
         this.eventService = eventService;
         this.kafkaService = kafkaService;
     }

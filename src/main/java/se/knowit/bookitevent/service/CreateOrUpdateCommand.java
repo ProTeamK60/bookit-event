@@ -2,6 +2,7 @@ package se.knowit.bookitevent.service;
 
 import se.knowit.bookitevent.dto.EventDTO;
 import se.knowit.bookitevent.dto.EventMapper;
+import se.knowit.bookitevent.kafka.producer.KafkaProducerService;
 import se.knowit.bookitevent.model.Event;
 
 import java.util.Objects;
@@ -46,16 +47,15 @@ public class CreateOrUpdateCommand implements Function<EventDTO, CreateOrUpdateC
     }
     
     private final EventService eventService;
-    private final KafkaService kafkaService;
+    private final KafkaProducerService kafkaService;
     
-    public CreateOrUpdateCommand(final EventService eventService, final KafkaService kafkaService) {
+    public CreateOrUpdateCommand(final EventService eventService, final KafkaProducerService<EventDTO> kafkaService) {
         this.eventService = Objects.requireNonNull(eventService);
         this.kafkaService = Objects.requireNonNull(kafkaService);
     }
     
     @Override
     public CommandResult apply(EventDTO eventDTO) {
-        kafkaService.sendMessage("events", eventDTO);
         EventMapper mapper = new EventMapper();
         Event event = mapper.fromDTO(eventDTO);
         Outcome shouldBe = null;
@@ -65,6 +65,8 @@ public class CreateOrUpdateCommand implements Function<EventDTO, CreateOrUpdateC
         if (event.getEventId() != null) {
             shouldBe = Outcome.UPDATED;
         }
+
+        kafkaService.sendMessage("events", eventDTO);
         try {
             Event saved = eventService.save(event);
             return new CommandResult(shouldBe, saved.getEventId());

@@ -1,5 +1,6 @@
 package se.knowit.bookitevent.configuration;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -11,8 +12,8 @@ import se.knowit.bookitevent.servicediscovery.LocalDiscoveryServiceImpl;
 @Configuration
 public class DevConfiguration {
 
-    @Profile("dev")
     @Bean
+    @Autowired
     public DiscoveryService localServiceDiscoveryImpl(Environment env) { return new LocalDiscoveryServiceImpl(env);}
 
 }

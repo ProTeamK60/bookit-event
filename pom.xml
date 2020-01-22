@@ -117,6 +117,10 @@
             <artifactId>spring-kafka</artifactId>
             <version>2.2.7.RELEASE</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka-test</artifactId>
+        </dependency>
     </dependencies>
     <profiles>
         <profile>
@@ -426,7 +430,7 @@
                                             <http>
                                                 <url>http://localhost:${tomcat.port}/api/v1/events</url>
                                             </http>
-                                            <time>140000</time> <!-- Long timeout is needed on some VMs -->
+                                            <time>180000</time> <!-- Long timeout is needed on some VMs -->
                                         </wait>
                                     </run>
                                 </image>

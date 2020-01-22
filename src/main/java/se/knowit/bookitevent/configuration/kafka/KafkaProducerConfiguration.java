@@ -11,7 +11,11 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import se.knowit.bookitevent.dto.EventDTO;
+import se.knowit.bookitevent.kafka.producer.KafkaEventProducerServiceImpl;
+import se.knowit.bookitevent.kafka.producer.KafkaProducerService;
 import se.knowit.bookitevent.model.Event;
+import se.knowit.bookitevent.servicediscovery.DiscoveryService;
+import se.knowit.bookitevent.servicediscovery.DiscoveryServiceResult;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,22 +23,30 @@ import java.util.Map;
 @Configuration
 public class KafkaProducerConfiguration {
 
-    @Value(value = "${kafka.bootstrapAddress}")
-    private String bootstrapAddress;
+    private DiscoveryService discoveryService;
+
+    public KafkaProducerConfiguration(DiscoveryService discoveryService) {
+        this.discoveryService = discoveryService;
+    }
 
     @Bean
     public ProducerFactory<String, EventDTO> producerFactory() {
-        final Map<String, Object> configuration = new HashMap<>();
-        configuration.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
-        configuration.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        configuration.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        Map<String, Object> configProps = new HashMap<>();
+        DiscoveryServiceResult result = discoveryService.discoverInstances("bookit", "kafka");
+        configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, result.getAddresses());
+        configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        return new DefaultKafkaProducerFactory(configProps);
+    }
 
-        return new DefaultKafkaProducerFactory<>(configuration);
+    @Bean
+    public KafkaTemplate<String, EventDTO> EventTemplate() {
+        return new KafkaTemplate(producerFactory());
     }
 
     @Bean
     @Autowired
-    public KafkaTemplate<String, EventDTO> kafkaTemplate(final ProducerFactory<String, EventDTO> producerFactory) {
-        return new KafkaTemplate<>(producerFactory);
+    public KafkaProducerService<EventDTO> kafkaServiceImpl(KafkaTemplate<String, EventDTO> eventTemplate) {
+        return new KafkaEventProducerServiceImpl(eventTemplate);
     }
 }

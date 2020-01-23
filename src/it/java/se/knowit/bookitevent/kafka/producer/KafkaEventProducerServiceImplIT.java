@@ -35,7 +35,7 @@ public class KafkaEventProducerServiceImplIT {
     public static final String TOPIC_NAME = "events-test";
 
     @Autowired
-    private KafkaProducerService kafkaProducerService;
+    private KafkaProducerService<EventDTO> kafkaProducerService;
 
     @Autowired
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
@@ -66,7 +66,7 @@ public class KafkaEventProducerServiceImplIT {
         consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-        ConsumerFactory<String, EventDTO> consumerFactory = new DefaultKafkaConsumerFactory(consumerProps, new StringDeserializer(), new JsonDeserializer(EventDTO.class, false));
+        ConsumerFactory<String, EventDTO> consumerFactory = new DefaultKafkaConsumerFactory<>(consumerProps, new StringDeserializer(), new JsonDeserializer<>(EventDTO.class, false));
         return consumerFactory.createConsumer();
     }
 

@@ -29,7 +29,7 @@ jobs:
           # Plain maven build and test
           name: Build and test
           command: |
-            ./mvnw verify -B -P test
+            ./mvnw verify -B -P circleci
       - save_cache:
           paths:
             - ~/.m2
@@ -71,3 +71,4 @@ jobs:
               -Dcircle.workflow.guid=${CIRCLE_WORKFLOW_ID} \
               -Dbuild.user=${CIRCLE_PROJECT_USERNAME} \
               -Dbuild.repo=${CIRCLE_PROJECT_REPONAME}
+              -Dactive.profile=prod

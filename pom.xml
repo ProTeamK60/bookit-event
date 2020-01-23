@@ -25,6 +25,7 @@
         <build.user>local-build</build.user>
         <build.repo>local-build</build.repo>
         <circle.workflow.guid>local-build</circle.workflow.guid>
+        <active.profile>dev</active.profile>
     </properties>
 
     <dependencies>
@@ -126,7 +127,7 @@
         <profile>
             <id>circleci</id>
             <properties>
-                <activatedProperties>prod</activatedProperties>
+                <activatedProperties>${active.profile}</activatedProperties>
             </properties>
             <build>
                 <plugins>
@@ -136,7 +137,7 @@
                         <version>1.7.0</version>
                         <configuration>
                             <from>
-                                <image>registry://docker.io/proteamk60/aml-eventjdk:0.0.1-SNAPSHOT</image>
+                                <image>registry://docker.io/proteamk60/aml-eventjdk:0.0.2-SNAPSHOT</image>
                             </from>
                             <to>
                                 <image>docker.io/proteamk60/${project.artifactId}:${project.version}-b${build.number}
@@ -149,89 +150,7 @@
                                     <jvmFlag>-Dbuild.user=${build.user}</jvmFlag>
                                     <jvmFlag>-Dbuild.repo=${build.repo}</jvmFlag>
                                     <jvmFlag>-Dcircle.workflow.guid=${circle.workflow.guid}</jvmFlag>
-                                </jvmFlags>
-                                <ports>
-                                    <port>${tomcat.port}</port>
-                                </ports>
-                                <workingDirectory>/app</workingDirectory>
-                            </container>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>com.spotify</groupId>
-                        <artifactId>dockerfile-maven-plugin</artifactId>
-                        <version>${dockerfile-maven-version}</version>
-                        <executions>
-                            <execution>
-                                <id>default-spotify</id>
-                                <phase>none</phase>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>build-helper-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>add-test-source</id>
-                                <phase>none</phase>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-failsafe-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>failsafe-execution</id>
-                                <phase>none</phase>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>io.fabric8</groupId>
-                        <artifactId>docker-maven-plugin</artifactId>
-                        <version>0.20.1</version>
-                        <executions>
-                            <execution>
-                                <id>prepare-it-bookit</id>
-                                <phase>none</phase>
-                            </execution>
-                            <execution>
-                                <id>remove-bookit</id>
-                                <phase>none</phase>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>test</id>
-            <properties>
-                <activatedProperties>dev</activatedProperties>
-            </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>com.google.cloud.tools</groupId>
-                        <artifactId>jib-maven-plugin</artifactId>
-                        <version>1.7.0</version>
-                        <configuration>
-                            <from>
-                                <image>registry://docker.io/proteamk60/aml-eventjdk:0.0.1-SNAPSHOT</image>
-                            </from>
-                            <to>
-                                <image>docker.io/proteamk60/${project.artifactId}:${project.version}-b${build.number}
-                                </image>
-                            </to>
-                            <container>
-                                <jvmFlags>
-                                    <jvmFlag>-Dbuild.number=${build.number}</jvmFlag>
-                                    <jvmFlag>-Dcommit.hash=${commit.hash}</jvmFlag>
-                                    <jvmFlag>-Dbuild.user=${build.user}</jvmFlag>
-                                    <jvmFlag>-Dbuild.repo=${build.repo}</jvmFlag>
-                                    <jvmFlag>-Dcircle.workflow.guid=${circle.workflow.guid}</jvmFlag>
+                                    <jvmFlag>-Dspring.profiles.active=${active.profile}</jvmFlag>
                                 </jvmFlags>
                                 <ports>
                                     <port>${tomcat.port}</port>
@@ -420,7 +339,7 @@
                         <configuration>
                             <images>
                                 <image>
-                                    <name>bookit-event:0.0.1-SNAPSHOT</name>
+                                    <name>bookit-event:0.0.-SNAPSHOT</name>
                                     <alias>bookit</alias>
                                     <run>
                                         <ports>

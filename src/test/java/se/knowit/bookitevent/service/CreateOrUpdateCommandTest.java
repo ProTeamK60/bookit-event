@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.knowit.bookitevent.dto.EventDTO;
 import se.knowit.bookitevent.dto.EventMapper;
+import se.knowit.bookitevent.kafka.producer.KafkaProducerService;
 import se.knowit.bookitevent.model.Event;
 
 import java.time.Instant;
@@ -24,7 +25,7 @@ class CreateOrUpdateCommandTest {
     private EventService service;
 
     @Mock
-    private KafkaService kafkaService;
+    private KafkaProducerService<String, EventDTO> kafkaService;
 
     @InjectMocks
     private CreateOrUpdateCommand command;

@@ -4,15 +4,26 @@ import org.springframework.core.env.Environment;
 
 public class LocalDiscoveryServiceImpl implements DiscoveryService {
 
-    private Environment env;
-    private final static String PREFIX = "discovery.service.";
+    private final Environment environment;
+    private final static String prefix = "discovery.service.";
 
-    public LocalDiscoveryServiceImpl(Environment env) {
-        this.env = env;
+    public LocalDiscoveryServiceImpl(Environment environment) {
+        this.environment = environment;
     }
 
     @Override
-    public String discoverInstance(String serviceName) {
-        return env.getProperty(PREFIX + serviceName);
+    public DiscoveryServiceResult discoverInstances(String namespaceName, String serviceName) {
+        DiscoveryServiceResult result = new DiscoveryServiceResult();
+        String address = environment.getProperty(prefix + serviceName);
+
+        if(address != null) {
+            Instance instance = new Instance();
+            String[] ipPort = address.split(":");
+            instance.setInstanceIpv4(ipPort[0]);
+            instance.setInstancePort(ipPort[1]);
+            result.addInstance(instance);
+        }
+        return result;
     }
+
 }

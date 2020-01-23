@@ -5,12 +5,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
+import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import se.knowit.bookitevent.dto.EventDTO;
+import se.knowit.bookitevent.kafka.producer.KafkaProducerService;
 import se.knowit.bookitevent.service.CreateOrUpdateCommand;
 import se.knowit.bookitevent.service.EventService;
-import se.knowit.bookitevent.service.KafkaService;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -19,7 +20,8 @@ import java.time.ZonedDateTime;
 @SpringBootApplication(exclude = {
 		DataSourceAutoConfiguration.class,
 		DataSourceTransactionManagerAutoConfiguration.class,
-		HibernateJpaAutoConfiguration.class
+		HibernateJpaAutoConfiguration.class,
+		KafkaAutoConfiguration.class
 })
 public class BookitEventApplication {
 
@@ -28,7 +30,7 @@ public class BookitEventApplication {
     }
 
 	@Bean
-	CommandLineRunner init(EventService eventService, KafkaService kafkaService) {
+	CommandLineRunner init(EventService eventService, KafkaProducerService<String, EventDTO> kafkaService) {
 		return args -> {
 			ZonedDateTime st = ZonedDateTime.of(2019, 12, 6, 18, 0, 0, 0, ZoneId.systemDefault());
 			EventDTO event = new EventDTO();

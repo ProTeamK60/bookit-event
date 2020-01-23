@@ -14,9 +14,9 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import se.knowit.bookitevent.dto.EventDTO;
 import se.knowit.bookitevent.dto.EventMapper;
+import se.knowit.bookitevent.kafka.producer.KafkaProducerService;
 import se.knowit.bookitevent.model.Event;
 import se.knowit.bookitevent.service.EventService;
-import se.knowit.bookitevent.service.KafkaService;
 
 import java.io.UnsupportedEncodingException;
 import java.time.Instant;
@@ -60,7 +60,7 @@ class EventControllerTest {
     private EventService eventService;
 
     @Mock
-    private KafkaService kafkaService;
+    private KafkaProducerService<String, EventDTO> kafkaService;
     
     @InjectMocks
     private EventController eventController;

@@ -30,7 +30,7 @@ public class BookitEventApplication {
     }
 
 	@Bean
-	CommandLineRunner init(EventService eventService, KafkaProducerService<EventDTO> kafkaService) {
+	CommandLineRunner init(EventService eventService, KafkaProducerService<String, EventDTO> kafkaService) {
 		return args -> {
 			ZonedDateTime st = ZonedDateTime.of(2019, 12, 6, 18, 0, 0, 0, ZoneId.systemDefault());
 			EventDTO event = new EventDTO();

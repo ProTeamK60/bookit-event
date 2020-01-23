@@ -34,9 +34,9 @@ public class EventController {
     private static final URI BASE_URI = URI.create(BASE_PATH + "/");
     
     private final EventService eventService;
-    private final KafkaProducerService<EventDTO> kafkaService;
+    private final KafkaProducerService<String, EventDTO> kafkaService;
     
-    public EventController(final EventService eventService, final KafkaProducerService<EventDTO> kafkaService) {
+    public EventController(final EventService eventService, final KafkaProducerService<String, EventDTO> kafkaService) {
         this.eventService = eventService;
         this.kafkaService = kafkaService;
     }

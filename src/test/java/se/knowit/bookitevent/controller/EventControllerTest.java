@@ -60,7 +60,7 @@ class EventControllerTest {
     private EventService eventService;
 
     @Mock
-    private KafkaProducerService<EventDTO> kafkaService;
+    private KafkaProducerService<String, EventDTO> kafkaService;
     
     @InjectMocks
     private EventController eventController;

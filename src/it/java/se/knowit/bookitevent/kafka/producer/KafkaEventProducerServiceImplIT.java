@@ -35,7 +35,7 @@ public class KafkaEventProducerServiceImplIT {
     public static final String TOPIC_NAME = "events-test";
 
     @Autowired
-    private KafkaProducerService<EventDTO> kafkaProducerService;
+    private KafkaProducerService<String, EventDTO> kafkaProducerService;
 
     @Autowired
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
@@ -52,7 +52,7 @@ public class KafkaEventProducerServiceImplIT {
         savedEvent.setEventStart(20000L);
         savedEvent.setEventEnd(30000L);
         savedEvent.setDeadlineRVSP(10000L);
-        kafkaProducerService.sendMessage(TOPIC_NAME, savedEvent);
+        kafkaProducerService.sendMessage(TOPIC_NAME, savedEvent.getEventId(), savedEvent);
 
         final Consumer<String, EventDTO> consumer = buildConsumer();
         kafkaBroker.consumeFromAnEmbeddedTopic(consumer, TOPIC_NAME);

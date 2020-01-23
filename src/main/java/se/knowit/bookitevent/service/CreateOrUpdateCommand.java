@@ -49,7 +49,7 @@ public class CreateOrUpdateCommand implements Function<EventDTO, CreateOrUpdateC
     private final EventService eventService;
     private final KafkaProducerService kafkaService;
     
-    public CreateOrUpdateCommand(final EventService eventService, final KafkaProducerService<EventDTO> kafkaService) {
+    public CreateOrUpdateCommand(final EventService eventService, final KafkaProducerService<String, EventDTO> kafkaService) {
         this.eventService = Objects.requireNonNull(eventService);
         this.kafkaService = Objects.requireNonNull(kafkaService);
     }
@@ -66,7 +66,7 @@ public class CreateOrUpdateCommand implements Function<EventDTO, CreateOrUpdateC
             shouldBe = Outcome.UPDATED;
         }
 
-        kafkaService.sendMessage("events", eventDTO);
+        kafkaService.sendMessage("events", eventDTO.getEventId(), eventDTO);
         try {
             Event saved = eventService.save(event);
             return new CommandResult(shouldBe, saved.getEventId());

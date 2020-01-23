@@ -46,7 +46,7 @@ public class KafkaProducerConfiguration {
 
     @Bean
     @Autowired
-    public KafkaProducerService<EventDTO> kafkaServiceImpl(KafkaTemplate<String, EventDTO> eventTemplate) {
+    public KafkaProducerService<String, EventDTO> kafkaServiceImpl(KafkaTemplate<String, EventDTO> eventTemplate) {
         return new KafkaEventProducerServiceImpl(eventTemplate);
     }
 }

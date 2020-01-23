@@ -25,7 +25,7 @@ class CreateOrUpdateCommandTest {
     private EventService service;
 
     @Mock
-    private KafkaProducerService<EventDTO> kafkaService;
+    private KafkaProducerService<String, EventDTO> kafkaService;
 
     @InjectMocks
     private CreateOrUpdateCommand command;

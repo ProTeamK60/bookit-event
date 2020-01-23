@@ -6,7 +6,7 @@ import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 import se.knowit.bookitevent.dto.EventDTO;
 
-public class KafkaEventProducerServiceImpl implements KafkaProducerService<EventDTO> {
+public class KafkaEventProducerServiceImpl implements KafkaProducerService<String, EventDTO> {
 
     private KafkaTemplate<String, EventDTO> eventTemplate;
 
@@ -15,8 +15,8 @@ public class KafkaEventProducerServiceImpl implements KafkaProducerService<Event
     }
 
     @Override
-    public void sendMessage(final String topic, final EventDTO event) {
-        ListenableFuture<SendResult<String, EventDTO>> future = eventTemplate.send(topic, event);
+    public void sendMessage(final String topic, final String key, final EventDTO event) {
+        ListenableFuture<SendResult<String, EventDTO>> future = eventTemplate.send(topic, key, event);
         future.addCallback(new ListenableFutureCallback<>() {
             @Override
             public void onFailure(Throwable throwable) {

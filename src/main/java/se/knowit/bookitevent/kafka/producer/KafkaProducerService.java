@@ -1,5 +1,5 @@
 package se.knowit.bookitevent.kafka.producer;
 
-public interface KafkaProducerService<T> {
-    void sendMessage(final String topic, final T dto);
+public interface KafkaProducerService<K,V> {
+    void sendMessage(final String topic, final K key, final V dto);
 }

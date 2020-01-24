@@ -16,7 +16,7 @@ import se.knowit.bookitevent.dto.EventDTO;
 import se.knowit.bookitevent.dto.EventMapper;
 import se.knowit.bookitevent.kafka.producer.KafkaProducerService;
 import se.knowit.bookitevent.model.Event;
-import se.knowit.bookitevent.service.EventService;
+import se.knowit.bookitevent.repository.EventRepository;
 
 import java.io.UnsupportedEncodingException;
 import java.time.Instant;
@@ -57,7 +57,7 @@ class EventControllerTest {
     }
     
     @Mock
-    private EventService eventService;
+    private EventRepository eventRepository;
 
     @Mock
     private KafkaProducerService<String, EventDTO> kafkaService;
@@ -74,7 +74,7 @@ class EventControllerTest {
     
     @Test
     void getRequestFor_AllEvents_ShouldReturnAllEvents() throws Exception {
-        when(eventService.findAll()).thenReturn(Set.of(DEFAULT_EVENT));
+        when(eventRepository.findAll()).thenReturn(Set.of(DEFAULT_EVENT));
         
         String json = mockMvc.perform(get("/api/v1/events/"))
                 .andExpect(status().isOk())
@@ -107,7 +107,7 @@ class EventControllerTest {
     
     @Test
     void postRequestWithInvalidEventDataShouldReturnA_HTTP_400_Response() throws Exception {
-        when(eventService.save(any())).thenThrow(IllegalArgumentException.class);
+        when(eventRepository.save(any())).thenThrow(IllegalArgumentException.class);
 
         mockMvc.perform(
                 post("/api/v1/events/")
@@ -119,7 +119,7 @@ class EventControllerTest {
     
     @Test
     void getRequestFor_AllEvents_ShouldReturnErrorCode_404_WhenNoEventsExists() throws Exception {
-        when(eventService.findAll()).thenReturn(Collections.emptySet());
+        when(eventRepository.findAll()).thenReturn(Collections.emptySet());
         
         mockMvc.perform(get("/api/v1/events/"))
                 .andExpect(status().isNotFound());
@@ -127,7 +127,7 @@ class EventControllerTest {
     
     @Test
     void getRequestFor_ExistingEventId_ShouldReturnCorrectEvent() throws Exception {
-        when(eventService.findByEventId(any())).thenReturn(Optional.of(DEFAULT_EVENT));
+        when(eventRepository.findByEventId(any())).thenReturn(Optional.of(DEFAULT_EVENT));
         
         mockMvc.perform(get("/api/v1/events/" + DEFAULT_UUID))
                 .andExpect(status().isOk())
@@ -137,7 +137,7 @@ class EventControllerTest {
     
     @Test
     void getRequestFor_NonExistingEventId_ShouldReturnErrorCode_404() throws Exception {
-        when(eventService.findByEventId(any())).thenReturn(Optional.empty());
+        when(eventRepository.findByEventId(any())).thenReturn(Optional.empty());
         
         mockMvc.perform(get("/api/v1/events/ea4ab6c0-8a73-4e9b-b28a-7bb9e0f87b18"))
                 .andExpect(status().isNotFound());
@@ -161,7 +161,7 @@ class EventControllerTest {
         savedEvent.setEventId(DEFAULT_UUID);
         EventDTO savedEventDTO = eventMapper.toDTO(savedEvent);
         
-        when(eventService.save(eq(eventMapper.fromDTO(eventDTO)))).thenReturn(savedEvent);
+        when(eventRepository.save(eq(eventMapper.fromDTO(eventDTO)))).thenReturn(savedEvent);
         
         MvcResult result = mockMvc.perform(
                 post("/api/v1/events/")
@@ -194,7 +194,7 @@ class EventControllerTest {
         Event savedEvent = eventMapper.fromDTO(eventDTO);
         EventDTO savedEventDTO = eventMapper.toDTO(savedEvent);
         
-        when(eventService.save(eq(eventMapper.fromDTO(eventDTO)))).thenReturn(savedEvent);
+        when(eventRepository.save(eq(eventMapper.fromDTO(eventDTO)))).thenReturn(savedEvent);
         
         MvcResult result = mockMvc.perform(
                 post("/api/v1/events/")
@@ -212,7 +212,7 @@ class EventControllerTest {
     private void assertReturnedLocationProvidesCorrectJson(Event savedEvent, EventDTO savedEventDTO, MvcResult result) throws Exception {
         String location = result.getResponse().getHeader("location");
         assertNotNull(location);
-        when(eventService.findByEventId(eq(DEFAULT_UUID))).thenReturn(Optional.of(savedEvent));
+        when(eventRepository.findByEventId(eq(DEFAULT_UUID))).thenReturn(Optional.of(savedEvent));
         MvcResult getResult = mockMvc.perform(get(location).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
         assertEquals(savedEventDTO, getEventDTOFromJson(getResult.getResponse().getContentAsString()));
@@ -231,7 +231,7 @@ class EventControllerTest {
         nextEvent.setEventStart(DEFAULT_EVENT.getEventEnd().plus(1, DAYS));
         nextEvent.setEventEnd(nextEvent.getEventStart().plus(1, DAYS));
         nextEvent.setDeadlineRVSP(nextEvent.getEventStart().minus(2, DAYS));
-        when(eventService.findAll()).thenReturn(Set.of(DEFAULT_EVENT, nextEvent));
+        when(eventRepository.findAll()).thenReturn(Set.of(DEFAULT_EVENT, nextEvent));
         
         String jsonData = mockMvc.perform(get("/api/v1/events/sorted/eventstart"))
                 .andExpect(status().isOk())

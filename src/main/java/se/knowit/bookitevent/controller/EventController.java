@@ -8,9 +8,9 @@ import se.knowit.bookitevent.dto.EventDTO;
 import se.knowit.bookitevent.dto.EventMapper;
 import se.knowit.bookitevent.kafka.producer.KafkaProducerService;
 import se.knowit.bookitevent.model.Event;
+import se.knowit.bookitevent.repository.EventRepository;
 import se.knowit.bookitevent.service.CreateOrUpdateCommand;
 import se.knowit.bookitevent.service.CreateOrUpdateCommand.CommandResult;
-import se.knowit.bookitevent.service.EventService;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -33,17 +33,17 @@ public class EventController {
     static final String BASE_PATH = "/api/v1/events";
     private static final URI BASE_URI = URI.create(BASE_PATH + "/");
     
-    private final EventService eventService;
+    private final EventRepository eventRepository;
     private final KafkaProducerService<String, EventDTO> kafkaService;
     
-    public EventController(final EventService eventService, final KafkaProducerService<String, EventDTO> kafkaService) {
-        this.eventService = eventService;
+    public EventController(final EventRepository eventRepository, final KafkaProducerService<String, EventDTO> kafkaService) {
+        this.eventRepository = eventRepository;
         this.kafkaService = kafkaService;
     }
     
     @GetMapping({"", "/"})
     public Set<EventDTO> findAllEvents() {
-        Set<Event> allEvents = eventService.findAll();
+        Set<Event> allEvents = eventRepository.findAll();
         if (allEvents.isEmpty()) {
             throw notFound();
         }
@@ -55,7 +55,7 @@ public class EventController {
 
     @GetMapping("/{id}")
     public EventDTO findById(@PathVariable String id) {
-        Event event = eventService.findByEventId(UUID.fromString(id)).orElseThrow(this::notFound);
+        Event event = eventRepository.findByEventId(UUID.fromString(id)).orElseThrow(this::notFound);
         return new EventMapper().toDTO(event);
     }
     
@@ -87,7 +87,7 @@ public class EventController {
     }
     
     private CommandResult createOrUpdate(@RequestBody EventDTO dto) {
-        var command = new CreateOrUpdateCommand(eventService, kafkaService);
+        var command = new CreateOrUpdateCommand(eventRepository, kafkaService);
         return command.apply(dto);
     }
     

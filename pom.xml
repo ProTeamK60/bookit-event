@@ -339,7 +339,7 @@
                         <configuration>
                             <images>
                                 <image>
-                                    <name>bookit-event:0.0.-SNAPSHOT</name>
+                                    <name>bookit-event:0.0.1-SNAPSHOT</name>
                                     <alias>bookit</alias>
                                     <run>
                                         <ports>
@@ -350,6 +350,7 @@
                                                 <url>http://localhost:${tomcat.port}/api/v1/events</url>
                                             </http>
                                             <time>180000</time> <!-- Long timeout is needed on some VMs -->
+
                                         </wait>
                                     </run>
                                 </image>

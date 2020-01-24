@@ -62,7 +62,8 @@ public class ClientUtilIT {
 				"                \"eventEnd\":\"90060000\", \n" + 
 				"                \"deadlineRVSP\":\"64800000\", \n" + 
 				"                \"location\":\"K60\",\n" + 
-				"                \"organizer\":\"AliAfs\"}";
+				"                \"organizer\":\"AliAfs\",\n" +
+				"                \"options\":[]}";
 		
 		HttpEntity<String> entity = new HttpEntity<String>(jsonEvent, headers);
 		ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);

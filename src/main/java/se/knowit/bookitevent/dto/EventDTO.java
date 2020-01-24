@@ -1,5 +1,7 @@
 package se.knowit.bookitevent.dto;
 
+import java.util.List;
+
 import lombok.Data;
 
 @Data
@@ -12,4 +14,5 @@ public class EventDTO {
     private Long deadlineRVSP;
     private String location;
     private String organizer;
+    private List<OptionDTO> options;
 }

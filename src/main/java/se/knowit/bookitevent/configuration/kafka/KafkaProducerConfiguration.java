@@ -13,7 +13,6 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
 import se.knowit.bookitevent.dto.EventDTO;
 import se.knowit.bookitevent.kafka.producer.KafkaEventProducerServiceImpl;
 import se.knowit.bookitevent.kafka.producer.KafkaProducerService;
-import se.knowit.bookitevent.model.Event;
 import se.knowit.bookitevent.servicediscovery.DiscoveryService;
 import se.knowit.bookitevent.servicediscovery.DiscoveryServiceResult;
 
@@ -22,7 +21,11 @@ import java.util.Map;
 
 @Configuration
 public class KafkaProducerConfiguration {
-
+    @Value("${discovery.namespacename:bookit}")
+    private String namespaceName;
+    @Value("${discovery.servicename:kafka}")
+    private String serviceName;
+    
     private DiscoveryService discoveryService;
 
     public KafkaProducerConfiguration(DiscoveryService discoveryService) {
@@ -32,7 +35,7 @@ public class KafkaProducerConfiguration {
     @Bean
     public ProducerFactory<String, EventDTO> producerFactory() {
         Map<String, Object> configProps = new HashMap<>();
-        DiscoveryServiceResult result = discoveryService.discoverInstances("bookit", "kafka");
+        DiscoveryServiceResult result = discoveryService.discoverInstances(namespaceName, serviceName);
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, result.getAddresses());
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);

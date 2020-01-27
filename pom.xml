@@ -98,12 +98,6 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit-dep</artifactId>
-            <version>4.8.2</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-servicediscovery</artifactId>
             <version>1.11.693</version>
@@ -339,7 +333,7 @@
                         <configuration>
                             <images>
                                 <image>
-                                    <name>bookit-event:0.0.-SNAPSHOT</name>
+                                    <name>bookit-event:0.0.1-SNAPSHOT</name>
                                     <alias>bookit</alias>
                                     <run>
                                         <ports>

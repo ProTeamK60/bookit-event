@@ -1,4 +1,4 @@
-package se.knowit.bookitevent.repository;
+package se.knowit.bookitevent.repository.map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

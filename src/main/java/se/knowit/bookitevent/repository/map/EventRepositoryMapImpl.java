@@ -1,8 +1,9 @@
-package se.knowit.bookitevent.repository;
+package se.knowit.bookitevent.repository.map;
 
 import org.springframework.stereotype.Repository;
 import se.knowit.bookitevent.model.Event;
 import se.knowit.bookitevent.model.EventValidator;
+import se.knowit.bookitevent.repository.EventRepository;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

@@ -1,11 +1,13 @@
 package se.knowit.bookitevent.repository;
 
+import org.springframework.stereotype.Repository;
 import se.knowit.bookitevent.model.Event;
 import se.knowit.bookitevent.model.EventValidator;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Repository
 public class EventRepositoryMapImpl implements EventRepository {
     private final Map<Long, Event> map;
     private final EventValidator eventValidator;

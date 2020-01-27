@@ -1,5 +1,6 @@
 package se.knowit.bookitevent.service;
 
+import org.springframework.stereotype.Service;
 import se.knowit.bookitevent.dto.EventDTO;
 import se.knowit.bookitevent.dto.EventMapper;
 import se.knowit.bookitevent.kafka.producer.KafkaProducerService;
@@ -11,6 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 
+@Service
 public class EventServiceImpl implements Function<EventDTO, EventServiceImpl.CommandResult> {
     
     public enum Outcome {CREATED, UPDATED, FAILED}

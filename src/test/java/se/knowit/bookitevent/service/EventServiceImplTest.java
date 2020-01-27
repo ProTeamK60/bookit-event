@@ -20,7 +20,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class CreateOrUpdateCommandTest {
+class EventServiceImplTest {
     private static final String EVENT_ID = "ea4ab6c0-8a73-4e9b-b28a-7bb9e0f87b18";
     @Mock
     private EventRepository service;
@@ -29,7 +29,7 @@ class CreateOrUpdateCommandTest {
     private KafkaProducerService<String, EventDTO> kafkaService;
 
     @InjectMocks
-    private CreateOrUpdateCommand command;
+    private EventServiceImpl command;
     
     private final Event invalidNewEvent = new Event();
     private final EventDTO invalidNewDto = new EventDTO();
@@ -58,8 +58,8 @@ class CreateOrUpdateCommandTest {
     @Test
     void savingANewValidEventShouldReturnOutcomeCreated() {
         when(service.save(eq(validNewEvent))).thenReturn(forUpdateEvent);
-        CreateOrUpdateCommand.CommandResult result = command.apply(validNewDTO);
-        assertEquals(CreateOrUpdateCommand.Outcome.CREATED, result.getOutcome());
+        EventServiceImpl.CommandResult result = command.apply(validNewDTO);
+        assertEquals(EventServiceImpl.Outcome.CREATED, result.getOutcome());
         assertTrue(result.getEventId().isPresent());
         assertEquals(forUpdateEvent.getEventId(), result.getEventId().get());
     }
@@ -67,8 +67,8 @@ class CreateOrUpdateCommandTest {
     @Test
     void updatingExistingEventShouldReturnOutcomeUpdated() {
         when(service.save(eq(forUpdateEvent))).thenReturn(forUpdateEvent);
-        CreateOrUpdateCommand.CommandResult result = command.apply(forUpdateDto);
-        assertEquals(CreateOrUpdateCommand.Outcome.UPDATED, result.getOutcome());
+        EventServiceImpl.CommandResult result = command.apply(forUpdateDto);
+        assertEquals(EventServiceImpl.Outcome.UPDATED, result.getOutcome());
         assertTrue(result.getEventId().isPresent());
         assertEquals(forUpdateEvent.getEventId(), result.getEventId().get());
     }
@@ -76,8 +76,8 @@ class CreateOrUpdateCommandTest {
     @Test
     void savingInvalidEventShouldReturnOutcomeFailed() {
         when(service.save(eq(invalidNewEvent))).thenThrow(IllegalArgumentException.class);
-        CreateOrUpdateCommand.CommandResult result = command.apply(invalidNewDto);
-        assertEquals(CreateOrUpdateCommand.Outcome.FAILED, result.getOutcome());
+        EventServiceImpl.CommandResult result = command.apply(invalidNewDto);
+        assertEquals(EventServiceImpl.Outcome.FAILED, result.getOutcome());
         assertTrue(result.getEventId().isEmpty());
         assertTrue(result.getThrowable().isPresent());
         assertEquals(IllegalArgumentException.class, result.getThrowable().get().getClass());

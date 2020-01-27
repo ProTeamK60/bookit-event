@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Bean;
 import se.knowit.bookitevent.dto.EventDTO;
 import se.knowit.bookitevent.kafka.producer.KafkaProducerService;
 import se.knowit.bookitevent.repository.EventRepository;
-import se.knowit.bookitevent.service.CreateOrUpdateCommand;
+import se.knowit.bookitevent.service.EventServiceImpl;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -42,8 +42,8 @@ public class BookitEventApplication {
 			event.setLocation("Norrmalm");
 			event.setOrganizer("Knowit");
 			event.setDescription("Julbord!");
-			CreateOrUpdateCommand createOrUpdateCommand = new CreateOrUpdateCommand(eventRepository, kafkaService);
-			createOrUpdateCommand.apply(event);
+			EventServiceImpl eventServiceImpl = new EventServiceImpl(eventRepository, kafkaService);
+			eventServiceImpl.apply(event);
 			
 			event = new EventDTO();
 			event.setName("Sierra Nevada");
@@ -55,8 +55,8 @@ public class BookitEventApplication {
 			event.setLocation("Spain");
 			event.setOrganizer("Knowit");
 			event.setDescription("Skidkonferans!");
-			createOrUpdateCommand = new CreateOrUpdateCommand(eventRepository, kafkaService);
-			createOrUpdateCommand.apply(event);
+			eventServiceImpl = new EventServiceImpl(eventRepository, kafkaService);
+			eventServiceImpl.apply(event);
 
 
 		};

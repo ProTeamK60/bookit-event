@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 
-public class CreateOrUpdateCommand implements Function<EventDTO, CreateOrUpdateCommand.CommandResult> {
+public class EventServiceImpl implements Function<EventDTO, EventServiceImpl.CommandResult> {
     
     public enum Outcome {CREATED, UPDATED, FAILED}
     
@@ -50,7 +50,7 @@ public class CreateOrUpdateCommand implements Function<EventDTO, CreateOrUpdateC
     private final EventRepository eventRepository;
     private final KafkaProducerService kafkaService;
     
-    public CreateOrUpdateCommand(final EventRepository eventRepository, final KafkaProducerService<String, EventDTO> kafkaService) {
+    public EventServiceImpl(final EventRepository eventRepository, final KafkaProducerService<String, EventDTO> kafkaService) {
         this.eventRepository = Objects.requireNonNull(eventRepository);
         this.kafkaService = Objects.requireNonNull(kafkaService);
     }

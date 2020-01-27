@@ -9,8 +9,8 @@ import se.knowit.bookitevent.dto.EventMapper;
 import se.knowit.bookitevent.kafka.producer.KafkaProducerService;
 import se.knowit.bookitevent.model.Event;
 import se.knowit.bookitevent.repository.EventRepository;
-import se.knowit.bookitevent.service.CreateOrUpdateCommand;
-import se.knowit.bookitevent.service.CreateOrUpdateCommand.CommandResult;
+import se.knowit.bookitevent.service.EventServiceImpl;
+import se.knowit.bookitevent.service.EventServiceImpl.CommandResult;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -21,8 +21,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static se.knowit.bookitevent.service.CreateOrUpdateCommand.Outcome.CREATED;
-import static se.knowit.bookitevent.service.CreateOrUpdateCommand.Outcome.UPDATED;
+import static se.knowit.bookitevent.service.EventServiceImpl.Outcome.CREATED;
+import static se.knowit.bookitevent.service.EventServiceImpl.Outcome.UPDATED;
 
 @RestController
 @RequestMapping(EventController.BASE_PATH)
@@ -87,7 +87,7 @@ public class EventController {
     }
     
     private CommandResult createOrUpdate(@RequestBody EventDTO dto) {
-        var command = new CreateOrUpdateCommand(eventRepository, kafkaService);
+        var command = new EventServiceImpl(eventRepository, kafkaService);
         return command.apply(dto);
     }
     

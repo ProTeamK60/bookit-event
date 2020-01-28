@@ -7,7 +7,6 @@ import org.springframework.web.server.ResponseStatusException;
 import se.knowit.bookitevent.dto.EventDTO;
 import se.knowit.bookitevent.dto.EventMapper;
 import se.knowit.bookitevent.model.Event;
-import se.knowit.bookitevent.repository.EventRepository;
 import se.knowit.bookitevent.service.EventService;
 
 import java.io.PrintWriter;
@@ -31,19 +30,17 @@ public class EventController {
     static final String BASE_PATH = "/api/v1/events";
     private static final URI BASE_URI = URI.create(BASE_PATH + "/");
     
-    private final EventRepository eventRepository;
     private final EventService eventService;
     private final EventMapper mapper;
     
-    public EventController(final EventRepository eventRepository, final EventService eventService) {
-        this.eventRepository = eventRepository;
+    public EventController(final EventService eventService) {
         this.eventService = eventService;
         mapper = new EventMapper();
     }
     
     @GetMapping({"", "/"})
     public Set<EventDTO> findAllEvents() {
-        Set<Event> allEvents = eventRepository.findAll();
+        Set<Event> allEvents = eventService.findAll();
         if (allEvents.isEmpty()) {
             throw notFound();
         }
@@ -55,7 +52,7 @@ public class EventController {
 
     @GetMapping("/{id}")
     public EventDTO findById(@PathVariable String id) {
-        Event event = eventRepository.findByEventId(UUID.fromString(id)).orElseThrow(this::notFound);
+        Event event = eventService.findByEventId(UUID.fromString(id)).orElseThrow(this::notFound);
         return mapper.toDTO(event);
     }
     

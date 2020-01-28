@@ -2,6 +2,12 @@ package se.knowit.bookitevent.repository.map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import se.knowit.bookitevent.dto.EventDTO;
+import se.knowit.bookitevent.dto.EventMapper;
+import se.knowit.bookitevent.kafka.producer.KafkaProducerService;
 import se.knowit.bookitevent.model.Event;
 
 import java.time.Instant;
@@ -16,7 +22,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.time.temporal.ChronoUnit.HOURS;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
+@ExtendWith(MockitoExtension.class)
 class EventRepositoryMapImplTest {
     private static final Long DEFAULT_ID = 1L;
     private static final UUID DEFAULT_UUID = UUID.fromString("72ab7c8b-c0d5-4ab2-8c63-5cf1ad0b439b");
@@ -37,15 +46,17 @@ class EventRepositoryMapImplTest {
         return event;
     }
     
-    private EventRepositoryMapImpl eventService;
+    @Mock
+    private KafkaProducerService<String, EventDTO> kafkaProducerService;
+    private EventRepositoryMapImpl eventRepository;
     
     private Map<Long, Event> container;
     
     @BeforeEach
     void setUp() {
         container = new ConcurrentHashMap<>();
-        eventService = new EventRepositoryMapImpl(container);
-        eventService.save(DEFAULT_EVENT);
+        container.put(DEFAULT_ID, DEFAULT_EVENT);
+        eventRepository = new EventRepositoryMapImpl(kafkaProducerService, container);
     }
     
     @Test
@@ -54,15 +65,22 @@ class EventRepositoryMapImplTest {
         
         //Ensure there are nothing stored in the map
         container.clear();
-        Event returnedEvent = eventService.save(event);
+        Event returnedEvent = eventRepository.save(event);
         assertEquals(1L, returnedEvent.getId());
+        verifyPublished(returnedEvent);
+    }
+    
+    private void verifyPublished(Event event) {
+        EventDTO eventDTO = new EventMapper().toDTO(event);
+        verify(kafkaProducerService).sendMessage("events", eventDTO.getEventId(), eventDTO);
     }
     
     @Test
     void savingEventWithoutStartTimeShouldThrowException() {
         Event event = new Event();
         event.setName("Invalid Event");
-        assertThrows(IllegalArgumentException.class, () -> eventService.save(event));
+        assertThrows(IllegalArgumentException.class, () -> eventRepository.save(event));
+        verifyNoInteractions(kafkaProducerService);
     }
     
     @Test
@@ -72,19 +90,21 @@ class EventRepositoryMapImplTest {
         assertNull(event.getId());
         assertNull(event.getEventId());
         
-        Event returnedEvent = eventService.save(event);
+        Event returnedEvent = eventRepository.save(event);
         
         assertNotNull(returnedEvent);
         assertNotNull(returnedEvent.getId());
         assertNotNull(returnedEvent.getEventId());
+        verifyPublished(returnedEvent);
     }
     
     @Test
     void savingAnExistingEventMustNotChangeItsId() {
         Event event = getValidTestEvent();
         event.setId(10L);
-        Event returnedEvent = eventService.save(event);
+        Event returnedEvent = eventRepository.save(event);
         assertEquals(event.getId(), returnedEvent.getId());
+        verifyPublished(returnedEvent);
     }
     
     private Event getValidTestEvent() {
@@ -96,29 +116,29 @@ class EventRepositoryMapImplTest {
     
     @Test
     void itShouldNotBePossibleToSaveANullObject() {
-        assertThrows(NullPointerException.class, () -> eventService.save(null));
+        assertThrows(NullPointerException.class, () -> eventRepository.save(null));
     }
     
     @Test
     void itShouldNotBePossibleToSaveEventWithoutNameAndStartTime() {
-        assertThrows(IllegalArgumentException.class, () -> eventService.save(new Event()));
+        assertThrows(IllegalArgumentException.class, () -> eventRepository.save(new Event()));
     }
     
     @Test
     void itShouldBePossibleToGetEventByInternalId() {
-        Optional<Event> event = eventService.findById(DEFAULT_ID);
+        Optional<Event> event = eventRepository.findById(DEFAULT_ID);
         assertTrue(event.isPresent(), "Event should be present in returned Optional");
     }
     
     @Test
     void itShouldBePossibleToFindEventByExternalId() {
-        Optional<Event> optionalEvent = eventService.findByEventId(DEFAULT_UUID);
+        Optional<Event> optionalEvent = eventRepository.findByEventId(DEFAULT_UUID);
         assertTrue(optionalEvent.isPresent());
     }
     
     @Test
     void allEventsShouldBeReturnedByFindAll() {
-        Set<Event> events = eventService.findAll();
+        Set<Event> events = eventRepository.findAll();
         assertEquals(container.size(), events.size());
     }
 }

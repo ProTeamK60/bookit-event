@@ -1,6 +1,10 @@
 package se.knowit.bookitevent.repository.map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import se.knowit.bookitevent.dto.EventDTO;
+import se.knowit.bookitevent.dto.EventMapper;
+import se.knowit.bookitevent.kafka.producer.KafkaProducerService;
 import se.knowit.bookitevent.model.Event;
 import se.knowit.bookitevent.model.EventValidator;
 import se.knowit.bookitevent.repository.EventRepository;
@@ -10,18 +14,23 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
 public class EventRepositoryMapImpl implements EventRepository {
+    private final KafkaProducerService<String, EventDTO> kafkaProducerService;
     private final Map<Long, Event> map;
     private final EventValidator eventValidator;
     private final IdentityHandler identityHandler;
+    private final EventMapper mapper;
     
-    public EventRepositoryMapImpl() {
-        this(new ConcurrentHashMap<>());
+    @Autowired
+    public EventRepositoryMapImpl(KafkaProducerService<String, EventDTO> kafkaProducerService) {
+        this(kafkaProducerService, new ConcurrentHashMap<>());
     }
     
-    EventRepositoryMapImpl(Map<Long, Event> map) {
+    EventRepositoryMapImpl(KafkaProducerService<String, EventDTO> kafkaProducerService, Map<Long, Event> map) {
+        this.kafkaProducerService = kafkaProducerService;
         this.map = map;
         eventValidator = new EventValidator();
         identityHandler = new IdentityHandler();
+        mapper = new EventMapper();
     }
     
     @Override
@@ -34,7 +43,13 @@ public class EventRepositoryMapImpl implements EventRepository {
         Event event = eventValidator.ensureEventIsValidOrThrowException(incomingEvent);
         assignRequiredIds(event);
         persistEvent(event);
+        publish(event);
         return event;
+    }
+    
+    private void publish(Event event) {
+        EventDTO eventDTO = mapper.toDTO(event);
+        kafkaProducerService.sendMessage("events", eventDTO.getEventId(), eventDTO);
     }
     
     

@@ -1,16 +1,24 @@
 package se.knowit.bookitevent.service;
 
 import se.knowit.bookitevent.dto.EventDTO;
+import se.knowit.bookitevent.model.Event;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 public interface EventService {
     
-    enum Outcome {CREATED, UPDATED, FAILED}
-    
     CreateOrUpdateCommandResult createOrUpdate(EventDTO event);
+    
+    Set<Event> findAll();
+    
+    Optional<Event> findByEventId(UUID id);
+    
+    Optional<Event> findById(Long aLong);
+    
+    enum Outcome {CREATED, UPDATED, FAILED}
     
     class CreateOrUpdateCommandResult {
         private final Outcome outcome;

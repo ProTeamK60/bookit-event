@@ -15,7 +15,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import se.knowit.bookitevent.dto.EventDTO;
 import se.knowit.bookitevent.dto.EventMapper;
 import se.knowit.bookitevent.model.Event;
-import se.knowit.bookitevent.repository.EventRepository;
 import se.knowit.bookitevent.service.EventService;
 
 import java.io.UnsupportedEncodingException;
@@ -58,8 +57,6 @@ class EventControllerTest {
         return event;
     }
     
-    @Mock
-    private EventRepository eventRepository;
 
     @Mock
     private EventService eventService;
@@ -76,7 +73,7 @@ class EventControllerTest {
     
     @Test
     void getRequestFor_AllEvents_ShouldReturnAllEvents() throws Exception {
-        when(eventRepository.findAll()).thenReturn(Set.of(DEFAULT_EVENT));
+        when(eventService.findAll()).thenReturn(Set.of(DEFAULT_EVENT));
         
         String json = mockMvc.perform(get("/api/v1/events/"))
                 .andExpect(status().isOk())
@@ -122,7 +119,7 @@ class EventControllerTest {
     
     @Test
     void getRequestFor_AllEvents_ShouldReturnErrorCode_404_WhenNoEventsExists() throws Exception {
-        when(eventRepository.findAll()).thenReturn(Collections.emptySet());
+        when(eventService.findAll()).thenReturn(Collections.emptySet());
         
         mockMvc.perform(get("/api/v1/events/"))
                 .andExpect(status().isNotFound());
@@ -130,7 +127,7 @@ class EventControllerTest {
     
     @Test
     void getRequestFor_ExistingEventId_ShouldReturnCorrectEvent() throws Exception {
-        when(eventRepository.findByEventId(any())).thenReturn(Optional.of(DEFAULT_EVENT));
+        when(eventService.findByEventId(any())).thenReturn(Optional.of(DEFAULT_EVENT));
         
         mockMvc.perform(get("/api/v1/events/" + DEFAULT_UUID))
                 .andExpect(status().isOk())
@@ -140,7 +137,7 @@ class EventControllerTest {
     
     @Test
     void getRequestFor_NonExistingEventId_ShouldReturnErrorCode_404() throws Exception {
-        when(eventRepository.findByEventId(any())).thenReturn(Optional.empty());
+        when(eventService.findByEventId(any())).thenReturn(Optional.empty());
         
         mockMvc.perform(get("/api/v1/events/ea4ab6c0-8a73-4e9b-b28a-7bb9e0f87b18"))
                 .andExpect(status().isNotFound());
@@ -215,7 +212,7 @@ class EventControllerTest {
     private void assertReturnedLocationProvidesCorrectJson(Event savedEvent, EventDTO savedEventDTO, MvcResult result) throws Exception {
         String location = result.getResponse().getHeader("location");
         assertNotNull(location);
-        when(eventRepository.findByEventId(eq(DEFAULT_UUID))).thenReturn(Optional.of(savedEvent));
+        when(eventService.findByEventId(eq(DEFAULT_UUID))).thenReturn(Optional.of(savedEvent));
         MvcResult getResult = mockMvc.perform(get(location).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andReturn();
         assertEquals(savedEventDTO, getEventDTOFromJson(getResult.getResponse().getContentAsString()));
@@ -234,7 +231,7 @@ class EventControllerTest {
         nextEvent.setEventStart(DEFAULT_EVENT.getEventEnd().plus(1, DAYS));
         nextEvent.setEventEnd(nextEvent.getEventStart().plus(1, DAYS));
         nextEvent.setDeadlineRVSP(nextEvent.getEventStart().minus(2, DAYS));
-        when(eventRepository.findAll()).thenReturn(Set.of(DEFAULT_EVENT, nextEvent));
+        when(eventService.findAll()).thenReturn(Set.of(DEFAULT_EVENT, nextEvent));
         
         String jsonData = mockMvc.perform(get("/api/v1/events/sorted/eventstart"))
                 .andExpect(status().isOk())

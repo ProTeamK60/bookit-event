@@ -42,7 +42,7 @@ public class BookitEventApplication {
 			event.setLocation("Norrmalm");
 			event.setOrganizer("Knowit");
 			event.setDescription("Julbord!");
-			EventServiceImpl eventServiceImpl = new EventServiceImpl(eventRepository, kafkaService);
+			EventServiceImpl eventServiceImpl = new EventServiceImpl(eventRepository);
 			eventServiceImpl.createOrUpdate(event);
 			
 			event = new EventDTO();
@@ -55,7 +55,7 @@ public class BookitEventApplication {
 			event.setLocation("Spain");
 			event.setOrganizer("Knowit");
 			event.setDescription("Skidkonferans!");
-			eventServiceImpl = new EventServiceImpl(eventRepository, kafkaService);
+			eventServiceImpl = new EventServiceImpl(eventRepository);
 			eventServiceImpl.createOrUpdate(event);
 
 

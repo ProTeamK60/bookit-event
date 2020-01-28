@@ -8,73 +8,35 @@ import se.knowit.bookitevent.model.Event;
 import se.knowit.bookitevent.repository.EventRepository;
 
 import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.function.Function;
+
+import static se.knowit.bookitevent.service.EventService.Outcome.CREATED;
+import static se.knowit.bookitevent.service.EventService.Outcome.UPDATED;
 
 @Service
-public class EventServiceImpl implements Function<EventDTO, EventServiceImpl.CommandResult> {
-    
-    public enum Outcome {CREATED, UPDATED, FAILED}
-    
-    public static class CommandResult {
-        private final Outcome outcome;
-        private final UUID eventId;
-        private final Throwable throwable;
-        
-        CommandResult(Throwable throwable) {
-            this(Outcome.FAILED, null, throwable);
-        }
-        
-        CommandResult(Outcome outcome, UUID eventId) {
-            this(outcome, eventId, null);
-        }
-        
-        CommandResult(Outcome outcome, UUID eventId, Throwable throwable) {
-            this.outcome = Objects.requireNonNull(outcome);
-            this.eventId = eventId;
-            this.throwable = throwable;
-        }
-        
-        public Outcome getOutcome() {
-            return outcome;
-        }
-        
-        public Optional<UUID> getEventId() {
-            return Optional.ofNullable(eventId);
-        }
-        
-        public Optional<Throwable> getThrowable() {
-            return Optional.ofNullable(throwable);
-        }
-    }
+public class EventServiceImpl implements EventService {
     
     private final EventRepository eventRepository;
-    private final KafkaProducerService kafkaService;
+    private final KafkaProducerService<String, EventDTO> kafkaService;
+    private final EventMapper mapper;
     
     public EventServiceImpl(final EventRepository eventRepository, final KafkaProducerService<String, EventDTO> kafkaService) {
         this.eventRepository = Objects.requireNonNull(eventRepository);
         this.kafkaService = Objects.requireNonNull(kafkaService);
+        mapper = new EventMapper();
     }
     
     @Override
-    public CommandResult apply(EventDTO eventDTO) {
-        EventMapper mapper = new EventMapper();
+    public CreateOrUpdateCommandResult createOrUpdate(EventDTO eventDTO) {
         Event event = mapper.fromDTO(eventDTO);
-        Outcome shouldBe = null;
-        if (event.getEventId() == null) {
-            shouldBe = Outcome.CREATED;
-        }
-        if (event.getEventId() != null) {
-            shouldBe = Outcome.UPDATED;
-        }
-
-        kafkaService.sendMessage("events", eventDTO.getEventId(), eventDTO);
+        Outcome outcome = event.getEventId() == null ? CREATED: UPDATED;
+        
         try {
             Event saved = eventRepository.save(event);
-            return new CommandResult(shouldBe, saved.getEventId());
+            EventDTO savedDTO = mapper.toDTO(saved);
+            kafkaService.sendMessage("events", savedDTO.getEventId(), savedDTO);
+            return new CreateOrUpdateCommandResult(outcome, saved.getEventId());
         } catch (RuntimeException e) {
-            return new CommandResult(e);
+            return new CreateOrUpdateCommandResult(e);
         }
     }
 }

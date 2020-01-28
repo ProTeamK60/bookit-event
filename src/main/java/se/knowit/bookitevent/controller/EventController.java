@@ -6,11 +6,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import se.knowit.bookitevent.dto.EventDTO;
 import se.knowit.bookitevent.dto.EventMapper;
-import se.knowit.bookitevent.kafka.producer.KafkaProducerService;
 import se.knowit.bookitevent.model.Event;
 import se.knowit.bookitevent.repository.EventRepository;
-import se.knowit.bookitevent.service.EventServiceImpl;
-import se.knowit.bookitevent.service.EventServiceImpl.CommandResult;
+import se.knowit.bookitevent.service.EventService;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -21,8 +19,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static se.knowit.bookitevent.service.EventServiceImpl.Outcome.CREATED;
-import static se.knowit.bookitevent.service.EventServiceImpl.Outcome.UPDATED;
+import static se.knowit.bookitevent.service.EventService.Outcome.CREATED;
+import static se.knowit.bookitevent.service.EventService.Outcome.UPDATED;
 
 @RestController
 @RequestMapping(EventController.BASE_PATH)
@@ -34,11 +32,13 @@ public class EventController {
     private static final URI BASE_URI = URI.create(BASE_PATH + "/");
     
     private final EventRepository eventRepository;
-    private final KafkaProducerService<String, EventDTO> kafkaService;
+    private final EventService eventService;
+    private final EventMapper mapper;
     
-    public EventController(final EventRepository eventRepository, final KafkaProducerService<String, EventDTO> kafkaService) {
+    public EventController(final EventRepository eventRepository, final EventService eventService) {
         this.eventRepository = eventRepository;
-        this.kafkaService = kafkaService;
+        this.eventService = eventService;
+        mapper = new EventMapper();
     }
     
     @GetMapping({"", "/"})
@@ -47,8 +47,8 @@ public class EventController {
         if (allEvents.isEmpty()) {
             throw notFound();
         }
-        EventMapper mapper = new EventMapper();
-		return allEvents.stream()
+        
+        return allEvents.stream()
                 .map(mapper::toDTO)
                 .collect(Collectors.toSet());
 	}
@@ -56,7 +56,7 @@ public class EventController {
     @GetMapping("/{id}")
     public EventDTO findById(@PathVariable String id) {
         Event event = eventRepository.findByEventId(UUID.fromString(id)).orElseThrow(this::notFound);
-        return new EventMapper().toDTO(event);
+        return mapper.toDTO(event);
     }
     
     @GetMapping("/sorted/eventstart")
@@ -75,7 +75,7 @@ public class EventController {
     
     @PostMapping(value = {"", "/"}, consumes = "application/json", produces = "application/json")
     public ResponseEntity<String> createOrUpdateEvent(@RequestBody EventDTO dto) {
-        var result = createOrUpdate(dto);
+        var result = eventService.createOrUpdate(dto);
 
         if (result.getOutcome() == CREATED) {
             return generateEventCreatedResponse(result);
@@ -86,24 +86,19 @@ public class EventController {
         }
     }
     
-    private CommandResult createOrUpdate(@RequestBody EventDTO dto) {
-        var command = new EventServiceImpl(eventRepository, kafkaService);
-        return command.apply(dto);
-    }
-    
-    private ResponseEntity<String> generateEventCreatedResponse(CommandResult result) {
+    private ResponseEntity<String> generateEventCreatedResponse(EventService.CreateOrUpdateCommandResult result) {
         UUID eventId = result.getEventId().orElseThrow(RuntimeException::new);
         return ResponseEntity.created(getURI(eventId.toString()))
                 .header("Access-Control-Expose-Headers", "Location").build();
     }
     
-    private ResponseEntity<String> generateEventUpdateAcceptedResponse(CommandResult result) {
+    private ResponseEntity<String> generateEventUpdateAcceptedResponse(EventService.CreateOrUpdateCommandResult result) {
         UUID eventId = result.getEventId().orElseThrow(RuntimeException::new);
         return ResponseEntity.accepted().location(getURI(eventId.toString()))
                 .header("Access-Control-Expose-Headers", "Location").build();
     }
     
-    private ResponseEntity<String> generateResponseForBadCreateOrUpdateEventRequest(CommandResult result) {
+    private ResponseEntity<String> generateResponseForBadCreateOrUpdateEventRequest(EventService.CreateOrUpdateCommandResult result) {
         Throwable throwable = result.getThrowable().orElseThrow(RuntimeException::new);
         StringWriter writer = new StringWriter();
         throwable.printStackTrace(new PrintWriter(writer));

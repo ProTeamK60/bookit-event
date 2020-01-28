@@ -14,9 +14,9 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import se.knowit.bookitevent.dto.EventDTO;
 import se.knowit.bookitevent.dto.EventMapper;
-import se.knowit.bookitevent.kafka.producer.KafkaProducerService;
 import se.knowit.bookitevent.model.Event;
 import se.knowit.bookitevent.repository.EventRepository;
+import se.knowit.bookitevent.service.EventService;
 
 import java.io.UnsupportedEncodingException;
 import java.time.Instant;
@@ -34,6 +34,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static se.knowit.bookitevent.service.EventService.Outcome.CREATED;
+import static se.knowit.bookitevent.service.EventService.Outcome.UPDATED;
 
 @ExtendWith(MockitoExtension.class)
 class EventControllerTest {
@@ -60,7 +62,7 @@ class EventControllerTest {
     private EventRepository eventRepository;
 
     @Mock
-    private KafkaProducerService<String, EventDTO> kafkaService;
+    private EventService eventService;
     
     @InjectMocks
     private EventController eventController;
@@ -107,7 +109,8 @@ class EventControllerTest {
     
     @Test
     void postRequestWithInvalidEventDataShouldReturnA_HTTP_400_Response() throws Exception {
-        when(eventRepository.save(any())).thenThrow(IllegalArgumentException.class);
+        var result = new EventService.CreateOrUpdateCommandResult(new IllegalArgumentException());
+        when(eventService.createOrUpdate(any())).thenReturn(result);
 
         mockMvc.perform(
                 post("/api/v1/events/")
@@ -160,8 +163,8 @@ class EventControllerTest {
         Event savedEvent = eventMapper.fromDTO(eventDTO);
         savedEvent.setEventId(DEFAULT_UUID);
         EventDTO savedEventDTO = eventMapper.toDTO(savedEvent);
-        
-        when(eventRepository.save(eq(eventMapper.fromDTO(eventDTO)))).thenReturn(savedEvent);
+        var cmdRes = new EventService.CreateOrUpdateCommandResult(CREATED, DEFAULT_UUID);
+        when(eventService.createOrUpdate(any())).thenReturn(cmdRes);
         
         MvcResult result = mockMvc.perform(
                 post("/api/v1/events/")
@@ -193,8 +196,8 @@ class EventControllerTest {
         EventMapper eventMapper = new EventMapper();
         Event savedEvent = eventMapper.fromDTO(eventDTO);
         EventDTO savedEventDTO = eventMapper.toDTO(savedEvent);
-        
-        when(eventRepository.save(eq(eventMapper.fromDTO(eventDTO)))).thenReturn(savedEvent);
+        var cmdRes = new EventService.CreateOrUpdateCommandResult(UPDATED, DEFAULT_UUID);
+        when(eventService.createOrUpdate(any())).thenReturn(cmdRes);
         
         MvcResult result = mockMvc.perform(
                 post("/api/v1/events/")

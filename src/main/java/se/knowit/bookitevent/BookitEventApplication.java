@@ -57,9 +57,8 @@ public class BookitEventApplication {
 			options.add(new OptionDTO(2, "multiOption", "vilka aktiviteter vill du delta i?", "simmning,bio,skridskor,skidor"));
 			options.add(new OptionDTO(3, "freeText", "annat viktigt info(allergi etc)", ""));
 			event.setOptions(options);
-			createOrUpdateCommand.apply(event);
-			
-			
+			eventServiceImpl.createOrUpdate(event);
+				
 			event = new EventDTO();
 
 			event.setName("Sierra Nevada");
@@ -71,13 +70,8 @@ public class BookitEventApplication {
 			event.setLocation("Spain");
 			event.setOrganizer("Knowit");
 			event.setDescription("Skidkonferans!");
-
-			eventServiceImpl = new EventServiceImpl(eventRepository);
-			eventServiceImpl.createOrUpdate(event);
-
-
 			event.setOptions(options);
-			createOrUpdateCommand.apply(event);
+			eventServiceImpl.createOrUpdate(event);
 			
 		};
 

@@ -51,7 +51,7 @@ public class BookitEventApplication {
 			createOrUpdateCommand.apply(event);
 			
 			event = new EventDTO();
-
+			
 			List<OptionDTO> options = new ArrayList<OptionDTO>(); 
 			options.add(new OptionDTO(1,"oneOption","Vad vill du äta?", "fisk,fågel,kött,vegetariskt"));
 			options.add(new OptionDTO(2, "multiOption", "vilka aktiviteter vill du delta i?", "simmning,bio,skridskor,skidor"));

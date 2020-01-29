@@ -10,8 +10,8 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.context.annotation.Bean;
 import se.knowit.bookitevent.dto.EventDTO;
 import se.knowit.bookitevent.kafka.producer.KafkaProducerService;
-import se.knowit.bookitevent.service.CreateOrUpdateCommand;
-import se.knowit.bookitevent.service.EventService;
+import se.knowit.bookitevent.repository.EventRepository;
+import se.knowit.bookitevent.service.EventServiceImpl;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -30,7 +30,7 @@ public class BookitEventApplication {
     }
 
 	@Bean
-	CommandLineRunner init(EventService eventService, KafkaProducerService<String, EventDTO> kafkaService) {
+	CommandLineRunner init(EventRepository eventRepository, KafkaProducerService<String, EventDTO> kafkaService) {
 		return args -> {
 			ZonedDateTime st = ZonedDateTime.of(2019, 12, 6, 18, 0, 0, 0, ZoneId.systemDefault());
 			EventDTO event = new EventDTO();
@@ -42,8 +42,8 @@ public class BookitEventApplication {
 			event.setLocation("Norrmalm");
 			event.setOrganizer("Knowit");
 			event.setDescription("Julbord!");
-			CreateOrUpdateCommand createOrUpdateCommand = new CreateOrUpdateCommand(eventService, kafkaService);
-			createOrUpdateCommand.apply(event);
+			EventServiceImpl eventServiceImpl = new EventServiceImpl(eventRepository);
+			eventServiceImpl.createOrUpdate(event);
 			
 			event = new EventDTO();
 			event.setName("Sierra Nevada");
@@ -55,8 +55,8 @@ public class BookitEventApplication {
 			event.setLocation("Spain");
 			event.setOrganizer("Knowit");
 			event.setDescription("Skidkonferans!");
-			createOrUpdateCommand = new CreateOrUpdateCommand(eventService, kafkaService);
-			createOrUpdateCommand.apply(event);
+			eventServiceImpl = new EventServiceImpl(eventRepository);
+			eventServiceImpl.createOrUpdate(event);
 
 
 		};

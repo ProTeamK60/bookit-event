@@ -16,9 +16,8 @@ import org.springframework.context.annotation.Bean;
 
 import se.knowit.bookitevent.dto.EventDTO;
 import se.knowit.bookitevent.dto.OptionDTO;
-import se.knowit.bookitevent.kafka.producer.KafkaProducerService;
-import se.knowit.bookitevent.service.CreateOrUpdateCommand;
-import se.knowit.bookitevent.service.EventService;
+import se.knowit.bookitevent.repository.EventRepository;
+import se.knowit.bookitevent.service.EventServiceImpl;
 
 
 @SpringBootApplication(exclude = {
@@ -34,7 +33,7 @@ public class BookitEventApplication {
     }
 
 	@Bean
-	CommandLineRunner init(EventService eventService, KafkaProducerService<String, EventDTO> kafkaService) {
+	CommandLineRunner init(EventRepository eventRepository) {
 		return args -> {
 			ZonedDateTime st = ZonedDateTime.of(2019, 12, 6, 18, 0, 0, 0, ZoneId.systemDefault());
 			EventDTO event = new EventDTO();
@@ -47,8 +46,9 @@ public class BookitEventApplication {
 			event.setOrganizer("Knowit");
 			event.setDescription("Julbord!");
 
-			CreateOrUpdateCommand createOrUpdateCommand = new CreateOrUpdateCommand(eventService, kafkaService);
-			createOrUpdateCommand.apply(event);
+			EventServiceImpl eventServiceImpl = new EventServiceImpl(eventRepository);
+			eventServiceImpl.createOrUpdate(event);
+
 			
 			event = new EventDTO();
 			
@@ -72,8 +72,9 @@ public class BookitEventApplication {
 			event.setOrganizer("Knowit");
 			event.setDescription("Skidkonferans!");
 
-			createOrUpdateCommand = new CreateOrUpdateCommand(eventService, kafkaService);
-			createOrUpdateCommand.apply(event);
+			eventServiceImpl = new EventServiceImpl(eventRepository);
+			eventServiceImpl.createOrUpdate(event);
+
 
 			event.setOptions(options);
 			createOrUpdateCommand.apply(event);

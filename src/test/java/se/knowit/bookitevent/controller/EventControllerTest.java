@@ -38,7 +38,6 @@ import static se.knowit.bookitevent.service.EventService.Outcome.UPDATED;
 
 @ExtendWith(MockitoExtension.class)
 class EventControllerTest {
-    private static final Long DEFAULT_ID = 1L;
     private static final UUID DEFAULT_UUID = UUID.fromString("72ab7c8b-c0d5-4ab2-8c63-5cf1ad0b439b");
     private static final Event DEFAULT_EVENT = buildDefaultEvent();
     
@@ -46,7 +45,6 @@ class EventControllerTest {
         Instant startTime = ZonedDateTime.of(2019, 11, 13, 17, 56, 0, 0, ZoneId.systemDefault()).toInstant();
         Event event = new Event();
         event.setName("DEFAULT_EVENT");
-        event.setId(DEFAULT_ID);
         event.setEventId(DEFAULT_UUID);
         event.setEventStart(startTime);
         event.setEventEnd(startTime.plus(2, HOURS));

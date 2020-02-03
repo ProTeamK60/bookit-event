@@ -47,10 +47,4 @@ public class EventServiceImpl implements EventService {
     public Optional<Event> findByEventId(UUID eventId) {
         return eventRepository.findByEventId(eventId);
     }
-    
-    @Override
-    public Optional<Event> findById(Long internalId) {
-        return eventRepository.findById(internalId);
-    }
-    
 }

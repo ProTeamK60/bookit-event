@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Repository
 public class EventRepositoryMapImpl implements EventRepository {
     private final KafkaProducerService<String, EventDTO> kafkaProducerService;
-    private final Map<Long, Event> map;
+    private final Map<UUID, Event> map;
     private final EventValidator eventValidator;
     private final IdentityHandler identityHandler;
     private final EventMapper mapper;
@@ -25,17 +25,12 @@ public class EventRepositoryMapImpl implements EventRepository {
         this(kafkaProducerService, new ConcurrentHashMap<>());
     }
     
-    EventRepositoryMapImpl(KafkaProducerService<String, EventDTO> kafkaProducerService, Map<Long, Event> map) {
+    EventRepositoryMapImpl(KafkaProducerService<String, EventDTO> kafkaProducerService, Map<UUID, Event> map) {
         this.kafkaProducerService = kafkaProducerService;
         this.map = map;
         eventValidator = new EventValidator();
         identityHandler = new IdentityHandler();
         mapper = new EventMapper();
-    }
-    
-    @Override
-    public Optional<Event> findById(Long id) {
-        return Optional.ofNullable(map.get(id));
     }
     
     @Override
@@ -54,12 +49,11 @@ public class EventRepositoryMapImpl implements EventRepository {
     
     
     private void assignRequiredIds(Event event) {
-        identityHandler.assignPersistenceIdIfNotSet(event, this);
         identityHandler.assignEventIdIfNotSet(event);
     }
     
-    private void persistEvent(Event event) {
-        map.put(event.getId(), event);
+    private Event persistEvent(Event event) {
+        return map.put(event.getEventId(), event);
     }
 	
 	
@@ -77,23 +71,9 @@ public class EventRepositoryMapImpl implements EventRepository {
     
     private static class IdentityHandler {
 	
-		void assignPersistenceIdIfNotSet(Event event, EventRepositoryMapImpl eventServiceMap) {
-			if (event.getId() == null) {
-				event.setId(getNextId(eventServiceMap));
-			}
-		}
-	
 		void assignEventIdIfNotSet(Event event) {
 			if (event.getEventId() == null) {
 				event.setEventId(UUID.randomUUID());
-			}
-		}
-	
-		Long getNextId(EventRepositoryMapImpl eventServiceMap) {
-			try {
-				return Collections.max(eventServiceMap.map.keySet()) + 1L;
-			} catch (NoSuchElementException ignored) {
-				return 1L;
 			}
 		}
 	}

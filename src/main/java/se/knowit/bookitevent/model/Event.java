@@ -10,7 +10,6 @@ import java.util.UUID;
 @Data
 public class Event {
 
-	private Long id;
 	private UUID eventId;
 	private String name;
 	private String description;

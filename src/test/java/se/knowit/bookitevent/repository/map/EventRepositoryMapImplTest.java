@@ -27,7 +27,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 
 @ExtendWith(MockitoExtension.class)
 class EventRepositoryMapImplTest {
-    private static final Long DEFAULT_ID = 1L;
     private static final UUID DEFAULT_UUID = UUID.fromString("72ab7c8b-c0d5-4ab2-8c63-5cf1ad0b439b");
     private static final Event DEFAULT_EVENT = buildDefaultEvent();
     
@@ -35,7 +34,6 @@ class EventRepositoryMapImplTest {
         Instant startTime = ZonedDateTime.of(2019, 11, 13, 17, 56,0,0, ZoneId.systemDefault()).toInstant();
         Event event = new Event();
         event.setName("DEFAULT_EVENT");
-        event.setId(DEFAULT_ID);
         event.setEventId(DEFAULT_UUID);
         event.setEventStart(startTime);
         event.setEventEnd(startTime.plus(2, HOURS));
@@ -50,29 +48,13 @@ class EventRepositoryMapImplTest {
     private KafkaProducerService<String, EventDTO> kafkaProducerService;
     private EventRepositoryMapImpl eventRepository;
     
-    private Map<Long, Event> container;
+    private Map<UUID, Event> container;
     
     @BeforeEach
     void setUp() {
         container = new ConcurrentHashMap<>();
-        container.put(DEFAULT_ID, DEFAULT_EVENT);
+        container.put(DEFAULT_UUID, DEFAULT_EVENT);
         eventRepository = new EventRepositoryMapImpl(kafkaProducerService, container);
-    }
-    
-    @Test
-    void firstGeneratedIdShouldBe_1() {
-        Event event = getValidTestEvent();
-        
-        //Ensure there are nothing stored in the map
-        container.clear();
-        Event returnedEvent = eventRepository.save(event);
-        assertEquals(1L, returnedEvent.getId());
-        verifyPublished(returnedEvent);
-    }
-    
-    private void verifyPublished(Event event) {
-        EventDTO eventDTO = new EventMapper().toDTO(event);
-        verify(kafkaProducerService).sendMessage("events", eventDTO.getEventId(), eventDTO);
     }
     
     @Test
@@ -87,24 +69,18 @@ class EventRepositoryMapImplTest {
     void saveNewEventShouldReturnEventWithIdsSet() {
         Event event = getValidTestEvent();
         
-        assertNull(event.getId());
         assertNull(event.getEventId());
         
         Event returnedEvent = eventRepository.save(event);
         
         assertNotNull(returnedEvent);
-        assertNotNull(returnedEvent.getId());
         assertNotNull(returnedEvent.getEventId());
         verifyPublished(returnedEvent);
     }
     
-    @Test
-    void savingAnExistingEventMustNotChangeItsId() {
-        Event event = getValidTestEvent();
-        event.setId(10L);
-        Event returnedEvent = eventRepository.save(event);
-        assertEquals(event.getId(), returnedEvent.getId());
-        verifyPublished(returnedEvent);
+    private void verifyPublished(Event event) {
+        EventDTO eventDTO = new EventMapper().toDTO(event);
+        verify(kafkaProducerService).sendMessage("events", eventDTO.getEventId(), eventDTO);
     }
     
     private Event getValidTestEvent() {
@@ -122,12 +98,6 @@ class EventRepositoryMapImplTest {
     @Test
     void itShouldNotBePossibleToSaveEventWithoutNameAndStartTime() {
         assertThrows(IllegalArgumentException.class, () -> eventRepository.save(new Event()));
-    }
-    
-    @Test
-    void itShouldBePossibleToGetEventByInternalId() {
-        Optional<Event> event = eventRepository.findById(DEFAULT_ID);
-        assertTrue(event.isPresent(), "Event should be present in returned Optional");
     }
     
     @Test

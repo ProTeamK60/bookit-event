@@ -15,4 +15,5 @@ public class EventDTO {
     private String location;
     private String organizer;
     private List<OptionDTO> options;
+    private Integer maxNumberOfApplicants;
 }

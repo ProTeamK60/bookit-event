@@ -19,6 +19,7 @@ public class Event {
 	private String location;
 	private String organizer;
 	private List<Option> options;
+	private Integer maxNumberOfApplicants;
 
 	public boolean haveEventId(UUID other) {
 		return Objects.equals(eventId, other);

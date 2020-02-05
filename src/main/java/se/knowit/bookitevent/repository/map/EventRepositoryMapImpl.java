@@ -9,7 +9,10 @@ import se.knowit.bookitevent.model.Event;
 import se.knowit.bookitevent.model.EventValidator;
 import se.knowit.bookitevent.repository.EventRepository;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
@@ -37,9 +40,15 @@ public class EventRepositoryMapImpl implements EventRepository {
     public Event save(Event incomingEvent) {
         Event event = eventValidator.ensureEventIsValidOrThrowException(incomingEvent);
         assignRequiredIds(event);
-        persistEvent(event);
-        publish(event);
+        Event oldEvent = persistEvent(event);
+        if (eventsAreDifferent(event, oldEvent)) {
+            publish(event);
+        }
         return event;
+    }
+    
+    private boolean eventsAreDifferent(Event event, Event oldEvent) {
+        return !event.equals(oldEvent);
     }
     
     private void publish(Event event) {

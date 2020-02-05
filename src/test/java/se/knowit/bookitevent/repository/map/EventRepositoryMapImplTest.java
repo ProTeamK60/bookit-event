@@ -91,6 +91,15 @@ class EventRepositoryMapImplTest {
     }
     
     @Test
+    void savingAnAlreadyStoredEventWithoutChangesShouldNotPublishToKafka() {
+        Event event = getValidTestEvent();
+        event.setEventId(UUID.randomUUID());
+        container.put(event.getEventId(), event);
+        eventRepository.save(event);
+        verifyNoInteractions(kafkaProducerService);
+    }
+    
+    @Test
     void itShouldNotBePossibleToSaveANullObject() {
         assertThrows(NullPointerException.class, () -> eventRepository.save(null));
     }

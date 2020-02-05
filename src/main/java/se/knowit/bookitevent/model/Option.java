@@ -12,4 +12,5 @@ public class Option {
     private String optionType;
     private String title;
     private String queryString;
+    private Boolean required;
 }

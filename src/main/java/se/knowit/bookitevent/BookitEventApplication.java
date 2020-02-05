@@ -52,9 +52,9 @@ public class BookitEventApplication {
             event = new EventDTO();
             
             List<OptionDTO> options = new ArrayList<OptionDTO>();
-            options.add(new OptionDTO(1,"oneOption","Vad vill du äta?", "fisk,fågel,kött,vegetariskt"));
-            options.add(new OptionDTO(2, "multiOption", "vilka aktiviteter vill du delta i?", "simmning,bio,skridskor,skidor"));
-            options.add(new OptionDTO(3, "freeText", "annat viktigt info(allergi etc)", ""));
+            options.add(new OptionDTO(1,"oneOption","Vad vill du äta?", "fisk,fågel,kött,vegetariskt", true));
+            options.add(new OptionDTO(2, "multiOption", "vilka aktiviteter vill du delta i?", "simmning,bio,skridskor,skidor", true));
+            options.add(new OptionDTO(3, "freeText", "annat viktigt info(allergi etc)", "", false));
             event.setOptions(options);
             eventServiceImpl.createOrUpdate(event);
             

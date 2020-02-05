@@ -33,7 +33,7 @@ public class EventMapper {
         event.setEventEnd(timeSupport.getInstantFromEpochMilli(dto.getEventEnd()));
         event.setDeadlineRVSP(timeSupport.getInstantFromEpochMilli(dto.getDeadlineRVSP()));
         if (null != dto.getOptions()) {
-          event.setOptions(dto.getOptions().stream().map(e -> {return new Option(e.getOptionId(), e.getOptionType(), e.getTitle(), e.getQueryString());}).collect(Collectors.toList()));
+          event.setOptions(dto.getOptions().stream().map(e -> {return new Option(e.getOptionId(), e.getOptionType(), e.getTitle(), e.getQueryString(), e.getRequired());}).collect(Collectors.toList()));
         }
         return event;
     }
@@ -51,7 +51,7 @@ public class EventMapper {
         dto.setEventEnd(timeSupport.getEpochMilliFromInstant(event.getEventEnd()));
         dto.setDeadlineRVSP(timeSupport.getEpochMilliFromInstant(event.getDeadlineRVSP()));
         if (null != event.getOptions()) {
-          dto.setOptions(event.getOptions().stream().map(e -> {return new OptionDTO(e.getOptionId(), e.getOptionType(), e.getTitle(), e.getQueryString());}).collect(Collectors.toList()));
+          dto.setOptions(event.getOptions().stream().map(e -> {return new OptionDTO(e.getOptionId(), e.getOptionType(), e.getTitle(), e.getQueryString(), e.getRequired());}).collect(Collectors.toList()));
         }
         return dto;
     }

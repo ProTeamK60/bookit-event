@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ExtendWith(SpringExtension.class)
 @EmbeddedKafka(partitions = 1,
         topics = {KafkaEventProducerServiceImplIT.TOPIC_NAME},
-        brokerProperties = "listeners=PLAINTEXT://localhost:9092")
+        brokerProperties = "listeners=PLAINTEXT://localhost:9093")
 @SpringBootTest
 public class KafkaEventProducerServiceImplIT {
 

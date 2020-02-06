@@ -246,7 +246,6 @@
                         <id>default-spotify</id>
                         <goals>
                             <goal>build</goal>
-                            <goal>push</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -282,6 +281,13 @@
                             </sources>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>get-local-ip</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>local-ip</goal>
+                        </goals>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>
@@ -314,6 +320,13 @@
                                     <name>bookit-event:0.0.1-SNAPSHOT</name>
                                     <alias>bookit</alias>
                                     <run>
+                                        <env>
+                                            <KAFKA_BOOTSTRAP>my.kafka.host:9092</KAFKA_BOOTSTRAP>
+                                        </env>
+                                        <extraHosts>
+                                            <!--suppress UnresolvedMavenProperty -->
+                                            <extraHost>my.kafka.host:${local.ip}</extraHost>
+                                        </extraHosts>
                                         <ports>
                                             <port>tomcat.port:8080</port>
                                         </ports>

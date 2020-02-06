@@ -18,8 +18,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static se.knowit.bookitevent.service.EventService.Outcome.CREATED;
-import static se.knowit.bookitevent.service.EventService.Outcome.UPDATED;
+import static se.knowit.bookitevent.service.EventService.Outcome.*;
 
 @RestController
 @RequestMapping(EventController.BASE_PATH)
@@ -76,7 +75,7 @@ public class EventController {
 
         if (result.getOutcome() == CREATED) {
             return generateEventCreatedResponse(result);
-        } else if (result.getOutcome() == UPDATED) {
+        } else if (result.getOutcome() == UPDATED || result.getOutcome() == NO_CHANGE) {
             return generateEventUpdateAcceptedResponse(result);
         } else {
             return generateResponseForBadCreateOrUpdateEventRequest(result);

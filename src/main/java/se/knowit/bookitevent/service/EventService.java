@@ -16,7 +16,7 @@ public interface EventService {
     
     Optional<Event> findByEventId(UUID id);
     
-    enum Outcome {CREATED, UPDATED, FAILED}
+    enum Outcome {CREATED, UPDATED, FAILED, NO_CHANGE}
     
     class CreateOrUpdateCommandResult {
         private final Outcome outcome;

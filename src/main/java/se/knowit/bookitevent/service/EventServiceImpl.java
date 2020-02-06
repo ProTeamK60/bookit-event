@@ -28,6 +28,9 @@ public class EventServiceImpl implements EventService {
     @Override
     public CreateOrUpdateCommandResult createOrUpdate(EventDTO eventDTO) {
         Event event = mapper.fromDTO(eventDTO);
+        if (event.getEventId() != null && alreadyPresent(event)){
+            return new CreateOrUpdateCommandResult(Outcome.NO_CHANGE, event.getEventId());
+        }
         Outcome outcome = event.getEventId() == null ? CREATED: UPDATED;
         
         try {
@@ -36,6 +39,12 @@ public class EventServiceImpl implements EventService {
         } catch (RuntimeException e) {
             return new CreateOrUpdateCommandResult(e);
         }
+    }
+    
+    private boolean alreadyPresent(final Event event) {
+        Optional<Event> foundEvent = findByEventId(event.getEventId());
+        Optional<Event> equalEvent = foundEvent.filter(e -> e.equals(event));
+        return equalEvent.isPresent();
     }
     
     @Override

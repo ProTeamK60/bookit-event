@@ -72,6 +72,10 @@ public class EventRepositoryMapImpl implements EventRepository {
                 .filter(ev -> ev.haveEventId(id))
                 .findFirst();
     }
+    @Override
+    public Optional<Event> deleteByEventId(UUID id) {
+        return Optional.ofNullable(map.remove(id));
+    }
     
     @Override
     public Set<Event> findAll() {

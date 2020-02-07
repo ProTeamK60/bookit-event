@@ -9,6 +9,7 @@ import se.knowit.bookitevent.dto.EventMapper;
 import se.knowit.bookitevent.model.Event;
 import se.knowit.bookitevent.service.EventService;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URI;
@@ -54,7 +55,15 @@ public class EventController {
         Event event = eventService.findByEventId(UUID.fromString(id)).orElseThrow(this::notFound);
         return mapper.toDTO(event);
     }
-    
+
+    @DeleteMapping("/{id}")
+    public EventDTO deleteByEventId(@PathVariable String id, HttpServletResponse response) {
+        Event event = eventService.deleteByEventId(UUID.fromString(id)).orElseThrow(this::notFound);
+        // inform the client that the request is accepted and the resource is queued for deletion.
+        response.setStatus(HttpServletResponse.SC_ACCEPTED);
+        return mapper.toDTO(event);
+    }
+
     @GetMapping("/sorted/eventstart")
     public List<EventDTO> findAllEventsSortedByEventStart() {
         Set<EventDTO> eventDTOS = findAllEvents();

@@ -15,7 +15,9 @@ public interface EventService {
     Set<Event> findAll();
     
     Optional<Event> findByEventId(UUID id);
-    
+
+    Optional<Event> deleteByEventId(UUID fromString);
+
     enum Outcome {CREATED, UPDATED, FAILED, NO_CHANGE}
     
     class CreateOrUpdateCommandResult {

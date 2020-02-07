@@ -11,9 +11,15 @@ public class EventDTO {
     private String description;
     private Long eventStart;
     private Long eventEnd;
+
     private Long deadlineRVSP;
     private String location;
     private String organizer;
     private List<OptionDTO> options;
     private Integer maxNumberOfApplicants;
+
+    public String getEventId() {
+        return eventId;
+    }
+
 }

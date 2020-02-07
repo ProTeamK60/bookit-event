@@ -24,4 +24,10 @@ public class Event {
 	public boolean haveEventId(UUID other) {
 		return Objects.equals(eventId, other);
 	}
+	public UUID getEventId(){
+		return this.eventId;
+	}
+	public void setEventId(UUID eventId) {
+		this.eventId = eventId;
+	}
 }

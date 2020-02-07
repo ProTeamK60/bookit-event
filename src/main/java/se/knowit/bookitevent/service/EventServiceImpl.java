@@ -56,4 +56,12 @@ public class EventServiceImpl implements EventService {
     public Optional<Event> findByEventId(UUID eventId) {
         return eventRepository.findByEventId(eventId);
     }
+
+    @Override
+    /**
+     * @UUID uuid input derived from String
+     */
+    public Optional<Event> deleteByEventId(UUID id) {
+        return eventRepository.deleteByEventId(id);
+    }
 }

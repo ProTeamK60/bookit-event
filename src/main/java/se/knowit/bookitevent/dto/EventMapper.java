@@ -49,7 +49,7 @@ public class EventMapper {
         dto.setOrganizer(event.getOrganizer());
         if (null == event.getStatus()){
             // assume the event is active, default status, if the deadline is not passed.
-            if(event.getDeadlineRVSP().compareTo(Instant.now()) > 0){
+            if(null== event.getDeadlineRVSP() || (event.getDeadlineRVSP().compareTo(Instant.now()) > 0)){
              dto.setStatus(EventStatus.ACTIVE.toString());
             }
             else {

@@ -157,7 +157,7 @@
                         <version>0.33.0</version>
                         <executions>
                             <execution>
-                                <id>prepare-it-bookit</id>
+                                <id>build-bookit</id>
                                 <phase>none</phase>
                             </execution>
                             <execution>

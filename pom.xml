@@ -132,17 +132,6 @@
                         </configuration>
                     </plugin>
                     <plugin>
-                        <groupId>com.spotify</groupId>
-                        <artifactId>dockerfile-maven-plugin</artifactId>
-                        <version>${dockerfile-maven-version}</version>
-                        <executions>
-                            <execution>
-                                <id>default-spotify</id>
-                                <phase>none</phase>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>build-helper-maven-plugin</artifactId>
                         <executions>
@@ -238,26 +227,6 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>com.spotify</groupId>
-                <artifactId>dockerfile-maven-plugin</artifactId>
-                <version>${dockerfile-maven-version}</version>
-                <executions>
-                    <execution>
-                        <id>default-spotify</id>
-                        <goals>
-                            <goal>build</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <repository>${project.artifactId}</repository>
-                    <tag>${project.version}</tag>
-                    <buildArgs>
-                        <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
-                    </buildArgs>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
@@ -306,41 +275,48 @@
             <plugin>
                 <groupId>io.fabric8</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
-                <version>0.20.1</version>
+                <version>0.33.0</version>
+                <configuration>
+                    <verbose>true</verbose>
+                    <images>
+                        <image>
+                            <name>${project.artifactId}:${project.version}</name>
+                            <alias>bookit</alias>
+                            <build>
+                                <contextDir>${project.basedir}</contextDir>
+                                <args>
+                                    <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
+                                </args>
+                            </build>
+                            <run>
+                                <env>
+                                    <KAFKA_BOOTSTRAP>my.kafka.host:9092</KAFKA_BOOTSTRAP>
+                                </env>
+                                <extraHosts>
+                                    <!--suppress UnresolvedMavenProperty -->
+                                    <extraHost>my.kafka.host:${local.ip}</extraHost>
+                                </extraHosts>
+                                <ports>
+                                    <port>tomcat.port:8080</port>
+                                </ports>
+                                <wait>
+                                    <http>
+                                        <url>http://localhost:${tomcat.port}/api/v1/events</url>
+                                    </http>
+                                    <time>180000</time> <!-- Long timeout is needed on some VMs -->
+                                </wait>
+                            </run>
+                        </image>
+                    </images>
+                </configuration>
                 <executions>
                     <execution>
-                        <id>prepare-it-bookit</id>
+                        <id>build-bookit</id>
                         <phase>pre-integration-test</phase>
                         <goals>
+                            <goal>build</goal>
                             <goal>start</goal>
                         </goals>
-                        <configuration>
-                            <images>
-                                <image>
-                                    <name>bookit-event:0.0.1-SNAPSHOT</name>
-                                    <alias>bookit</alias>
-                                    <run>
-                                        <env>
-                                            <KAFKA_BOOTSTRAP>my.kafka.host:9092</KAFKA_BOOTSTRAP>
-                                        </env>
-                                        <extraHosts>
-                                            <!--suppress UnresolvedMavenProperty -->
-                                            <extraHost>my.kafka.host:${local.ip}</extraHost>
-                                        </extraHosts>
-                                        <ports>
-                                            <port>tomcat.port:8080</port>
-                                        </ports>
-                                        <wait>
-                                            <http>
-                                                <url>http://localhost:${tomcat.port}/api/v1/events</url>
-                                            </http>
-                                            <time>180000</time> <!-- Long timeout is needed on some VMs -->
-
-                                        </wait>
-                                    </run>
-                                </image>
-                            </images>
-                        </configuration>
                     </execution>
                     <execution>
                         <id>remove-bookit</id>

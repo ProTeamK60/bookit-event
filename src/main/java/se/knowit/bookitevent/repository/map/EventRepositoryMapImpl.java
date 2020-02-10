@@ -6,6 +6,7 @@ import se.knowit.bookitevent.dto.EventDTO;
 import se.knowit.bookitevent.dto.EventMapper;
 import se.knowit.bookitevent.kafka.producer.KafkaProducerService;
 import se.knowit.bookitevent.model.Event;
+import se.knowit.bookitevent.model.EventStatus;
 import se.knowit.bookitevent.model.EventValidator;
 import se.knowit.bookitevent.repository.EventRepository;
 
@@ -46,7 +47,7 @@ public class EventRepositoryMapImpl implements EventRepository {
         }
         return event;
     }
-    
+
     private boolean eventsAreDifferent(Event event, Event oldEvent) {
         return !event.equals(oldEvent);
     }
@@ -72,16 +73,29 @@ public class EventRepositoryMapImpl implements EventRepository {
                 .filter(ev -> ev.haveEventId(id))
                 .findFirst();
     }
-    @Override
-    public Optional<Event> deleteByEventId(UUID id) {
-        return Optional.ofNullable(map.remove(id));
-    }
     
     @Override
     public Set<Event> findAll() {
         return Set.copyOf(map.values());
     }
-    
+
+    @Override
+    /**
+     * @UUID uuid input derived from String
+     */
+    public Optional<Event> markDeletedByEventId(UUID id)
+    {
+        Event event = map.get(id);
+        if (null!= event){
+            event.setStatus(EventStatus.DELETED.toString());
+            map.put(id, event);
+            System.out.println(map.get(event.getEventId()).toString());
+            this.publish(event);
+        }
+        // return eventRepository.markDeletedByEventId(id);
+        return Optional.of(event);
+    }
+
     private static class IdentityHandler {
 	
 		void assignEventIdIfNotSet(Event event) {

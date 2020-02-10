@@ -17,6 +17,7 @@ public class EventDTO {
     private String organizer;
     private List<OptionDTO> options;
     private Integer maxNumberOfApplicants;
+    private String status;
 
     public String getEventId() {
         return eventId;

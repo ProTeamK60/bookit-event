@@ -4,8 +4,8 @@ import org.springframework.stereotype.Service;
 import se.knowit.bookitevent.dto.EventDTO;
 import se.knowit.bookitevent.dto.EventMapper;
 import se.knowit.bookitevent.model.Event;
+import se.knowit.bookitevent.model.EventStatus;
 import se.knowit.bookitevent.repository.EventRepository;
-
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -61,7 +61,15 @@ public class EventServiceImpl implements EventService {
     /**
      * @UUID uuid input derived from String
      */
-    public Optional<Event> deleteByEventId(UUID id) {
-        return eventRepository.deleteByEventId(id);
+    public Optional<Event> markDeletedByEventId(UUID id)
+    {
+        Event event = this.findByEventId(id).get();
+        if (null!= event){
+            event.setStatus(EventStatus.DELETED.toString());
+            eventRepository.save(event);
+            System.out.println(eventRepository.findByEventId(id).toString());
+        }
+        // return eventRepository.markDeletedByEventId(id);
+        return Optional.of(event);
     }
 }

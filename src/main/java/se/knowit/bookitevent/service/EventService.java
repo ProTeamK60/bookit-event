@@ -16,7 +16,7 @@ public interface EventService {
     
     Optional<Event> findByEventId(UUID id);
 
-    Optional<Event> deleteByEventId(UUID fromString);
+    Optional<Event> markDeletedByEventId(UUID fromString);
 
     enum Outcome {CREATED, UPDATED, FAILED, NO_CHANGE}
     

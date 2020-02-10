@@ -1,10 +1,12 @@
 package se.knowit.bookitevent.dto;
 
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import se.knowit.bookitevent.model.Event;
+import se.knowit.bookitevent.model.EventStatus;
 import se.knowit.bookitevent.model.Option;
 import se.knowit.bookitevent.dto.TimeSupportImpl;
 import se.knowit.bookitevent.dto.TimeSupport;
@@ -45,6 +47,18 @@ public class EventMapper {
         dto.setDescription(event.getDescription());
         dto.setLocation(event.getLocation());
         dto.setOrganizer(event.getOrganizer());
+        if (null == event.getStatus()){
+            // assume the event is active, default status, if the deadline is not passed.
+            if(event.getDeadlineRVSP().compareTo(Instant.now()) > 0){
+             dto.setStatus(EventStatus.ACTIVE.toString());
+            }
+            else {
+                dto.setStatus(EventStatus.CLOSED.toString());
+            }
+        }
+        else   {
+            dto.setStatus(event.getStatus());
+        }
         dto.setMaxNumberOfApplicants(event.getMaxNumberOfApplicants());
         if (event.getEventId() != null) {
             dto.setEventId(event.getEventId().toString());

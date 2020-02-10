@@ -57,8 +57,8 @@ public class EventController {
     }
 
     @DeleteMapping("/{id}")
-    public EventDTO deleteByEventId(@PathVariable String id, HttpServletResponse response) {
-        Event event = eventService.deleteByEventId(UUID.fromString(id)).orElseThrow(this::notFound);
+    public EventDTO markDeletedByEventId(@PathVariable String id, HttpServletResponse response) {
+        Event event = eventService.markDeletedByEventId(UUID.fromString(id)).orElseThrow(this::notFound);
         // inform the client that the request is accepted and the resource is queued for deletion.
         response.setStatus(HttpServletResponse.SC_ACCEPTED);
         return mapper.toDTO(event);

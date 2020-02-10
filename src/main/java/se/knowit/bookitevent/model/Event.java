@@ -20,6 +20,7 @@ public class Event {
 	private String organizer;
 	private List<Option> options;
 	private Integer maxNumberOfApplicants;
+	private String status;
 
 	public boolean haveEventId(UUID other) {
 		return Objects.equals(eventId, other);
@@ -30,4 +31,12 @@ public class Event {
 	public void setEventId(UUID eventId) {
 		this.eventId = eventId;
 	}
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
 }

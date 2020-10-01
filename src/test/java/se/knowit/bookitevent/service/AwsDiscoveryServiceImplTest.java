@@ -35,14 +35,14 @@ public class AwsDiscoveryServiceImplTest {
 
     @Test
     void discoverInstancesTest() {
-        DiscoverInstancesResult descoveryResoult = new DiscoverInstancesResult();
+        DiscoverInstancesResult discoveryResult = new DiscoverInstancesResult();
         Map<String, String> attributes = new LinkedHashMap<>();
         attributes.put(AWS_INSTANCE_IPV4, AWS_INSTANCE_IPV4);
         attributes.put(AWS_INSTANCE_PORT, AWS_INSTANCE_PORT);
         HttpInstanceSummary instanceSummaries = new HttpInstanceSummary();
         instanceSummaries.setAttributes(attributes);
-        descoveryResoult.setInstances(Collections.singleton(instanceSummaries));
-        when(serviceDiscoverClient.discoverInstances(any())).thenReturn(descoveryResoult);
+        discoveryResult.setInstances(Collections.singleton(instanceSummaries));
+        when(serviceDiscoverClient.discoverInstances(any())).thenReturn(discoveryResult);
         DiscoveryServiceResult discoveryServiceResult = awsDiscoveryService.discoverInstances(NAMESPACENAME,
                 SERVICENAME);
         assertEquals(discoveryServiceResult.getInstances().get(0).getInstanceIpv4(), AWS_INSTANCE_IPV4);

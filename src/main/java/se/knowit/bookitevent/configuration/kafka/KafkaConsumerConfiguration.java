@@ -19,7 +19,7 @@ import se.knowit.bookitevent.servicediscovery.DiscoveryServiceResult;
 import java.util.HashMap;
 import java.util.Map;
 
-@EnableKafka
+/*@EnableKafka*/
 @Configuration
 public class KafkaConsumerConfiguration {
 

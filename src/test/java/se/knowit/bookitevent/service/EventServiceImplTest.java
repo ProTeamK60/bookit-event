@@ -61,7 +61,7 @@ class EventServiceImplTest {
         forUpdateWithChangeDto.setEventId(forUpdateDto.getEventId());
         forUpdateWithChangeEvent = mapper.fromDTO(forUpdateWithChangeDto);
     }
-    
+
     @Test
     void savingANewValidEventShouldReturnOutcomeCreated() {
         when(eventRepository.save(eq(validNewEvent))).thenReturn(forUpdateEvent);

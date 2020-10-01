@@ -54,7 +54,6 @@ class EventControllerTest {
         event.setDescription("Ett himla bra event!");
         return event;
     }
-    
 
     @Mock
     private EventService eventService;
@@ -220,7 +219,6 @@ class EventControllerTest {
         ObjectMapper jsonMapper = new ObjectMapper();
         return jsonMapper.readValue(incomingJson, EventDTO.class);
     }
-    
     
     @Test
     void getRequestFor_AllEvents_SortedByStartDate_ShouldReturnEventsInCorrectOrder() throws Exception {

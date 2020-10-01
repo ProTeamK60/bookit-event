@@ -18,7 +18,6 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @SpringBootApplication(exclude = {
         DataSourceAutoConfiguration.class,
         DataSourceTransactionManagerAutoConfiguration.class,
@@ -48,7 +47,6 @@ public class BookitEventApplication {
             EventServiceImpl eventServiceImpl = new EventServiceImpl(eventRepository);
             eventServiceImpl.createOrUpdate(event);
             
-            
             event = new EventDTO();
             
             List<OptionDTO> options = new ArrayList<OptionDTO>();
@@ -71,9 +69,7 @@ public class BookitEventApplication {
             event.setDescription("Skidkonferans!");
             event.setOptions(options);
             eventServiceImpl.createOrUpdate(event);
-            
         };
-        
     }
     
 }

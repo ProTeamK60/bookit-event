@@ -101,7 +101,6 @@ public class EventController {
         return ResponseEntity.badRequest().body(writer.toString());
     }
     
-    
     private URI getURI(String uri) {
         return URI.create(BASE_URI.getPath() + uri);
     }

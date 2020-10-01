@@ -1,8 +1,7 @@
 package se.knowit.bookitevent.dto;
 
-import java.util.List;
-
 import lombok.Data;
+import java.util.List;
 
 @Data
 public class EventDTO {

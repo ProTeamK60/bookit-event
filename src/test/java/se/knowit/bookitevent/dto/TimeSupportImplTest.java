@@ -8,7 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 class TimeSupportImplTest {
+
     private TimeSupportImpl support = new TimeSupportImpl();
+
     @Test
     void getNullOutputForNullInputWhenConvertingToInstant() {
         assertNull(support.getInstantFromEpochMilli(null));

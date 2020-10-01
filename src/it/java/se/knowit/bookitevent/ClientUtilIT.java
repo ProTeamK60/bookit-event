@@ -6,13 +6,11 @@ import org.springframework.web.client.RestTemplate;
 import se.knowit.bookitevent.dto.EventDTO;
 
 import java.net.URI;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 
 public class ClientUtilIT {
  
@@ -45,7 +43,6 @@ public class ClientUtilIT {
 		EventDTO[] allEvents = restTemplate.getForObject(url, EventDTO[].class);
 		assertTrue(allEvents != null);
 	}
-	
 
 	@Test
 	public void testCreateNewEvent() {

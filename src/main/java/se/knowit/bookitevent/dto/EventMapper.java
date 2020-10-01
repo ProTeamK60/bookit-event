@@ -1,13 +1,10 @@
 package se.knowit.bookitevent.dto;
 
-import java.util.Arrays;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
 import se.knowit.bookitevent.model.Event;
 import se.knowit.bookitevent.model.Option;
-import se.knowit.bookitevent.dto.TimeSupportImpl;
-import se.knowit.bookitevent.dto.TimeSupport;
+
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class EventMapper {
     private TimeSupport timeSupport;

@@ -55,8 +55,7 @@ public class EventRepositoryMapImpl implements EventRepository {
         EventDTO eventDTO = mapper.toDTO(event);
         kafkaProducerService.sendMessage("events", eventDTO.getEventId(), eventDTO);
     }
-    
-    
+
     private void assignRequiredIds(Event event) {
         identityHandler.assignEventIdIfNotSet(event);
     }
@@ -64,8 +63,7 @@ public class EventRepositoryMapImpl implements EventRepository {
     private Event persistEvent(Event event) {
         return map.put(event.getEventId(), event);
     }
-	
-	
+
 	@Override
     public Optional<Event> findByEventId(UUID id) {
         return map.values().stream()

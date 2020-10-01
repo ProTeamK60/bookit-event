@@ -60,7 +60,6 @@ public class KafkaEventProducerServiceImplIT {
         assertEquals(savedEvent, record.value());
     }
 
-
     private Consumer<String, EventDTO> buildConsumer() {
         Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("testSendEvent", "true", kafkaBroker);
         consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");

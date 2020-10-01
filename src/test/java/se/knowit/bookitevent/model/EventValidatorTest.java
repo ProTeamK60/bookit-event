@@ -86,8 +86,7 @@ class EventValidatorTest {
         minimalEvent.setDeadlineRVSP(plusHours(eventStart, 5));
         return minimalEvent;
     }
-    
-    
+
     @Test
     void ensureEventWithIncorrectRsvpDateIsInvalid() {
         assertThrows(IllegalArgumentException.class, this::executeValidationWithBadRsvpSettings);
